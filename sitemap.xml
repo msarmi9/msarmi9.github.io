@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>msarmi9.github.io/</loc>
+    <lastmod>2020-08-03T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/tags/deep-learning/</loc>
+    <lastmod>2020-08-03T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/posts/neural-nets-are-not-black-boxes/</loc>
+    <lastmod>2020-08-03T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/posts/</loc>
+    <lastmod>2020-08-03T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/tags/</loc>
+    <lastmod>2020-08-03T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/posts/lessons-from-my-zeroth-year-as-a-data-scientist/</loc>
+    <lastmod>2020-07-23T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/tags/reflection/</loc>
+    <lastmod>2020-07-23T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/tags/docker/</loc>
+    <lastmod>2020-06-11T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/posts/docker-for-deep-learning/</loc>
+    <lastmod>2020-06-11T16:03:23-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/books/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>msarmi9.github.io/categories/</loc>
+  </url>
+  
+</urlset>
