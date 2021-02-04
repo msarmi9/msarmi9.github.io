@@ -2,47 +2,47 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>My New Hugo Site</title>
-    <link>/</link>
+    <link>msarmi9.github.io/</link>
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© 2021</copyright>
-    <lastBuildDate>Mon, 03 Aug 2020 16:03:23 -0800</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 03 Aug 2020 16:03:23 -0800</lastBuildDate><atom:link href="msarmi9.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Neural Nets Aren&#39;t Black Boxes</title>
-      <link>/posts/neural-nets-are-not-black-boxes/</link>
+      <link>msarmi9.github.io/posts/neural-nets-are-not-black-boxes/</link>
       <pubDate>Mon, 03 Aug 2020 16:03:23 -0800</pubDate>
       
-      <guid>/posts/neural-nets-are-not-black-boxes/</guid>
+      <guid>msarmi9.github.io/posts/neural-nets-are-not-black-boxes/</guid>
       <description>If you think neural nets are black boxes, you&amp;rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process data to arrive at their predictions. In this post we&amp;rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.
 This post is very much inspired by this fantastic post by Sylvain Gugger.</description>
     </item>
     
     <item>
       <title>Lessons from my 0th Year as a Data Scientist</title>
-      <link>/posts/lessons-from-my-zeroth-year-as-a-data-scientist/</link>
+      <link>msarmi9.github.io/posts/lessons-from-my-zeroth-year-as-a-data-scientist/</link>
       <pubDate>Thu, 23 Jul 2020 16:03:23 -0800</pubDate>
       
-      <guid>/posts/lessons-from-my-zeroth-year-as-a-data-scientist/</guid>
+      <guid>msarmi9.github.io/posts/lessons-from-my-zeroth-year-as-a-data-scientist/</guid>
       <description>Later this week, I’ll graduate from the Masters in Data Science Program at the University of San Francisco alongside an incredible cohort of colleagues. It’s been a doozy of a year, to say the least. Now that it’s coming to an end, I’d like to reflect on some of the things I’ve learned and share them with you, in the hope that it’ll be useful to somebody somewhere who, like myself a year ago, is just starting out on their own data journey.</description>
     </item>
     
     <item>
       <title>Docker for Deep Learning on AWS</title>
-      <link>/posts/docker-for-deep-learning/</link>
+      <link>msarmi9.github.io/posts/docker-for-deep-learning/</link>
       <pubDate>Thu, 11 Jun 2020 16:03:23 -0800</pubDate>
       
-      <guid>/posts/docker-for-deep-learning/</guid>
+      <guid>msarmi9.github.io/posts/docker-for-deep-learning/</guid>
       <description>This post will help you set up a GPU enabled Docker container on an AWS EC2 instance. We’ll also cover how to access a Jupyter server running inside the container from your local machine.
 Why? One of my favourite things about Docker is that it allows you to easily reproduce your local development environment on a remote machine. This comes in real handy whenever you need to train a model on a GPU.</description>
     </item>
     
     <item>
       <title></title>
-      <link>/books/</link>
+      <link>msarmi9.github.io/books/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/books/</guid>
+      <guid>msarmi9.github.io/books/</guid>
       <description>Books to ❤️ Python Architecture Patterns with Python
 High Performance Python, 2nd Edition
 Fluent Python, 2nd Edition
