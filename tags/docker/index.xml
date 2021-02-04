@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>docker on My New Hugo Site</title>
-    <link>msarmi9.github.io/tags/docker/</link>
+    <link>/tags/docker/</link>
     <description>Recent content in docker on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© 2021</copyright>
-    <lastBuildDate>Thu, 11 Jun 2020 16:03:23 -0800</lastBuildDate><atom:link href="msarmi9.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 11 Jun 2020 16:03:23 -0800</lastBuildDate><atom:link href="/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker for Deep Learning on AWS</title>
-      <link>msarmi9.github.io/posts/docker-for-deep-learning/</link>
+      <link>/posts/docker-for-deep-learning/</link>
       <pubDate>Thu, 11 Jun 2020 16:03:23 -0800</pubDate>
       
-      <guid>msarmi9.github.io/posts/docker-for-deep-learning/</guid>
+      <guid>/posts/docker-for-deep-learning/</guid>
       <description>This post will help you set up a GPU enabled Docker container on an AWS EC2 instance. We’ll also cover how to access a Jupyter server running inside the container from your local machine.
 Why? One of my favourite things about Docker is that it allows you to easily reproduce your local development environment on a remote machine. This comes in real handy whenever you need to train a model on a GPU.</description>
     </item>
