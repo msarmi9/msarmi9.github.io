@@ -35,7 +35,7 @@
   
   
     
-    <link type="text/css" rel="stylesheet" href="/css/post.min.b60e0932fe1c50c3d7c5b4f83ee9e4592363654d0f2abf05bbd0678d5b8a214c.css" integrity="sha256-tg4JMv4cUMPXxbT4PunkWSNjZU0PKr8Fu9BnjVuKIUw="/>
+    <link type="text/css" rel="stylesheet" href="/css/post.min.f73f58b6c838a10145e8ccf7fc4325dbe662bc0d2ef228843913411d410deee3.css" integrity="sha256-9z9Ytsg4oQFF6Mz3/EMl2&#43;ZivA0u8iiEORNBHUEN7uM="/>
   
     
     <link type="text/css" rel="stylesheet" href="/css/custom.min.c72eab593080a225a72994fd2df380cf7918000265d30e6a5f8a63649b62c176.css" integrity="sha256-xy6rWTCAoiWnKZT9LfOAz3kYAAJl0w5qX4pjZJtiwXY="/>
@@ -417,7 +417,7 @@ optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
 trainer.train(10)
 </code></pre>
-<p><br /> </p>
+<p><!-- raw HTML omitted --> </p>
 <table>
 <thead>
 <tr>
@@ -466,7 +466,7 @@ trainer.train(10)
 sklearn_model.fit(X_train, y_train)
 sklearn_model.score(X_val, y_val)
 </code></pre>
-<pre><code>0.98245  
+<pre><code>0.98245
 </code></pre>
 <h2 id="going-deeper">Going Deeper<a class="anchor" href="#going-deeper">#</a></h2>
 <p>Now let&rsquo;s see if we can&rsquo;t do a bit better using a deeper network. First, we&rsquo;ll need to implement $\text{ReLU}$ for the activations in between our linear layers. $\text{ReLU}$ acts as a gate that admits only positive inputs and maps negative inputs to zero.</p>
@@ -504,7 +504,7 @@ model = Sequential(layers, criterion)
 optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
 </code></pre>
-<p><br /> </p>
+<p><!-- raw HTML omitted --> </p>
 <table>
 <thead>
 <tr>
