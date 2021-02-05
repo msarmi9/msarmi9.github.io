@@ -117,8 +117,8 @@ if (!doNotTrack) {
           </header>
           <article class="post__content">
               
-<figure><a href="https://colab.research.google.com/drive/1lzty20PgED0YzW0584Vf0YJ_uNdRLfTq?usp=sharing">
-    <img src="https://colab.research.google.com/assets/colab-badge.svg" height="25"/> </a>
+<figure><a href="https://colab.research.google.com/github/msarmi9/deep-notebook/blob/master/notebooks/Numpy-Neural-Net.ipynb">
+    <img src="https://colab.research.google.com/assets/colab-badge.svg" height="23"/> </a>
 </figure>
 
 <p>If you think neural nets are black boxes, you&rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process data to arrive at their predictions. In this post we&rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.</p>
@@ -173,6 +173,9 @@ x_3 &amp;= \text{BCE}(x_2)
 <pre><code class="language-python">class BinaryCrossEntropy:
     &quot;&quot;&quot;Container for the forward and backward pass of BCE.&quot;&quot;&quot;
 
+    def __call__(self, y_hat, y):
+        return self.forward(y_hat, y)
+
     def forward(self, y_hat, y):
         &quot;&quot;&quot;Return binary cross entropy given predictions and targets.&quot;&quot;&quot;
         self.y_hat, self.y = y_hat.clip(min=1e-8, max=1-1e-8), y
@@ -206,6 +209,9 @@ x_3 &amp;= \text{BCE}(x_2)
 <p>We might cover the multi-class case in more depth in a follow-up post, although it&rsquo;s more or less the same as what we&rsquo;ve done so far.</p>
 <pre><code class="language-python">class Sigmoid:
     &quot;&quot;&quot;Container for the forward and backward pass of sigmoid.&quot;&quot;&quot;
+
+    def __call__(self, x):
+        return self.forward(x)
 
     def forward(self, x):
         &quot;&quot;&quot;Pass a mini-batch through a sigmoid layer.&quot;&quot;&quot;
@@ -264,6 +270,9 @@ z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
         self.weights = np.random.uniform(-k, k, (n_inp, n_out))
         self.bias = np.zeros(n_out)
 
+    def __call__(self, x):
+        return self.forward(x)
+
     def forward(self, x):
         &quot;&quot;&quot;Pass a mini-batch through a linear layer.&quot;&quot;&quot;
         self.x = x
@@ -288,6 +297,9 @@ z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
         &quot;&quot;&quot;Initialise layers and loss criterion.&quot;&quot;&quot;
         self.layers = layers
         self.criterion = criterion
+
+    def __call__(self, x):
+        return self.forward(x)
 
     def forward(self, x):
         &quot;&quot;&quot;Pass a mini-batch through the network.&quot;&quot;&quot;
@@ -333,8 +345,8 @@ z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
         &quot;&quot;&quot;Train for one epoch and return the loss.&quot;&quot;&quot;
         loss, n = 0, 0
         for x, y in self.train_dl:
-            y_hat = self.model.forward(x)
-            batch_loss = self.model.criterion.forward(y_hat, y).sum()
+            y_hat = self.model(x)
+            batch_loss = self.model.criterion(y_hat, y).sum()
             self.model.backward()
             self.optimizer.step()
             loss += batch_loss
@@ -353,8 +365,8 @@ z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
         &quot;&quot;&quot;Return loss and metric on validation or test set.&quot;&quot;&quot;
         loss, metric, n = 0, 0, 0
         for x, y in dl:
-            y_hat = self.model.forward(x)
-            batch_loss = self.model.criterion.forward(y_hat, y).sum()
+            y_hat = self.model(x)
+            batch_loss = self.model.criterion(y_hat, y).sum()
             batch_metric = self.metric(y_hat, y)
             metric += len(y) * batch_metric
             loss += batch_loss
@@ -405,7 +417,7 @@ optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
 trainer.train(10)
 </code></pre>
-<p><!-- raw HTML omitted --> </p>
+<p><br /> </p>
 <table>
 <thead>
 <tr>
@@ -454,19 +466,8 @@ trainer.train(10)
 sklearn_model.fit(X_train, y_train)
 sklearn_model.score(X_val, y_val)
 </code></pre>
-<p><!-- raw HTML omitted --> </p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0.98245</td>
-</tr>
-</tbody>
-</table>
+<pre><code>0.98245  
+</code></pre>
 <h2 id="going-deeper">Going Deeper<a class="anchor" href="#going-deeper">#</a></h2>
 <p>Now let&rsquo;s see if we can&rsquo;t do a bit better using a deeper network. First, we&rsquo;ll need to implement $\text{ReLU}$ for the activations in between our linear layers. $\text{ReLU}$ acts as a gate that admits only positive inputs and maps negative inputs to zero.</p>
 <p>$$
@@ -479,6 +480,9 @@ $$</p>
 <p>During the backward pass $\text{ReLU}$ again acts as a gate that only admits gradients corresponding to positive inputs and sends all other gradients to zero.</p>
 <pre><code class="language-python">class ReLU:
     &quot;&quot;&quot;Container for the forward and backward pass of ReLU.&quot;&quot;&quot;
+
+    def __call__(self, x):
+        return self.forward(x)
 
     def forward(self, x):
         &quot;&quot;&quot;Pass a mini-batch through ReLU.&quot;&quot;&quot;
@@ -500,7 +504,7 @@ model = Sequential(layers, criterion)
 optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
 </code></pre>
-<p><!-- raw HTML omitted --> </p>
+<p><br /> </p>
 <table>
 <thead>
 <tr>

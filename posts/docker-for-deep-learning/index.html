@@ -124,7 +124,7 @@ if (!doNotTrack) {
 <p>The working directory for this post will be your project’s local git repository. While not a strict prerequisite of our goal of setting up a GPU enabled Docker container on AWS, it will make your life much easier by allowing you to simply <code>git clone</code> your GitHub repo on your EC2 instance.</p>
 <h2 id="step-1-the-docker-image">Step 1: The Docker Image<a class="anchor" href="#step-1-the-docker-image">#</a></h2>
 <p>The first step is to build the image we need to train a Deep Learning model. We’ll do that by adding the following Dockerfile to our repository.</p>
-<p><!-- raw HTML omitted --></p>
+<p><br /></p>
 <script type="application/javascript" src="https://gist.github.com/msarmi9/bae36b4f3045b24cc732c36cdde9b90f.js"></script>
 
 <p>The key component of this Dockerfile is the <code>nvidia/cuda</code> base image, which does all of the leg work needed for a container to access system GPUs. Your requirements file should contain all of the packages you need to train your model and will need to include Jupyter for the last <code>CMD</code> to work. If you have a script that trains your model, just replace the above <code>CMD</code> with the command that runs your script. You can also enable your favourite Jupyter extensions by adding <code>RUN jupyter contrib nbextension install</code> after the requirements step.</p>
