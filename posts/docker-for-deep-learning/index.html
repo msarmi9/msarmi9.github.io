@@ -38,7 +38,7 @@
     <link type="text/css" rel="stylesheet" href="/css/post.min.f73f58b6c838a10145e8ccf7fc4325dbe662bc0d2ef228843913411d410deee3.css" integrity="sha256-9z9Ytsg4oQFF6Mz3/EMl2&#43;ZivA0u8iiEORNBHUEN7uM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.c72eab593080a225a72994fd2df380cf7918000265d30e6a5f8a63649b62c176.css" integrity="sha256-xy6rWTCAoiWnKZT9LfOAz3kYAAJl0w5qX4pjZJtiwXY="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.a68dfbdd7d6b14977a7a47a7f6d4a9beb07fc85e5059182c01d90f6d0b861693.css" integrity="sha256-po373X1rFJd6eken9tSpvrB/yF5QWRgsAdkPbQuGFpM="/>
   
   
    
@@ -130,13 +130,7 @@ if (!doNotTrack) {
 <p>The key component of this Dockerfile is the <code>nvidia/cuda</code> base image, which does all of the leg work needed for a container to access system GPUs. Your requirements file should contain all of the packages you need to train your model and will need to include Jupyter for the last <code>CMD</code> to work. If you have a script that trains your model, just replace the above <code>CMD</code> with the command that runs your script. You can also enable your favourite Jupyter extensions by adding <code>RUN jupyter contrib nbextension install</code> after the requirements step.</p>
 <h2 id="step-2-launch--connect-to-ec2">Step 2: Launch &amp; Connect to EC2<a class="anchor" href="#step-2-launch--connect-to-ec2">#</a></h2>
 <p>The next step is to launch an EC2 instance and <code>ssh</code> into it. Your instance needs to have Docker and nvidia-docker installed. The easiest option is to choose an ubuntu Deep Learning AMI, which comes with both installed. Once you’ve chosen your instance’s AMI, select an instance type with a GPU. Sadly, they’re not cheap. At the time of writing this, a <code>p2.xlarge</code> instance in <code>us-west-2</code> will cost you $0.90/hour 😭.</p>
-<p>At the review page before you launch your instance, edit the security groups to open up <code>port 8888</code> so that we can connect to the Jupyter server running inside the container from our local machine. Check that your review page looks like this and launch your instance.</p>
-<p><a href="/images/aws-deep-learning-ami.jpeg" 
-  
-  
-><img src="/images/aws-deep-learning-ami.jpeg" alt="ubuntu"></a>
-</p>
-<p>Once your instance is up and running, <code>ssh</code> into it by running this command on your local terminal:</p>
+<p>At the review page before you launch your instance, edit the security groups to open up <code>port 8888</code> so that we can connect to the Jupyter server running inside the container from our local machine. Once your instance is up and running, <code>ssh</code> into it by running this command on your local terminal:</p>
 <pre><code>% ssh -i &lt;path-to-aws-pem-file&gt; &lt;user&gt;@&lt;EC2-hostname&gt;
 </code></pre>
 <p>You can find your <code>user</code> and <code>EC2-hostname</code> by selecting your instance and clicking <code>Connect</code> on the AWS Console. It should look something like <code>ubuntu@EC2–XXX.us-west-2.compute.amazonaws.com</code>.</p>
