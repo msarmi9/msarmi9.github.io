@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rust on Matt&#39;s blog</title>
+    <link>https://msarmi9.github.io/tags/rust/</link>
+    <description>Recent content in rust on Matt&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>© 2021</copyright>
+    <lastBuildDate>Fri, 05 Feb 2021 16:03:23 -0800</lastBuildDate><atom:link href="https://msarmi9.github.io/tags/rust/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Async Rust</title>
+      <link>https://msarmi9.github.io/posts/async-rust/</link>
+      <pubDate>Fri, 05 Feb 2021 16:03:23 -0800</pubDate>
+      
+      <guid>https://msarmi9.github.io/posts/async-rust/</guid>
+      <description>Async is all the rage. Python, rust, go. Pick your language and chances are it&amp;rsquo;s got some form of async / await going. If you&amp;rsquo;ve never worked with async / await before this can all be somewhat confusing, to put it mildly. We&amp;rsquo;ll take a high level overview of asynchronous programming in general before making our way to rust, where we&amp;rsquo;ll look at the current state of async&amp;mdash;what it is, how to do it, and how it all works.</description>
+    </item>
+    
+  </channel>
+</rss>
