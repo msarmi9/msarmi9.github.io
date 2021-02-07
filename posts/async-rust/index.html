@@ -118,8 +118,8 @@ if (!doNotTrack) {
           <article class="post__content">
               
 <p><!-- raw HTML omitted -->
-<figure><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=a5caf50cad5895d7a1683f946c807b45">
-    <img src="https://img.shields.io/badge/Rust-Playground-critical" height="29"/> </a>
+<figure><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=67b0bd80a84f5a1be7a54e9d3d7e86de">
+    <img src="https://img.shields.io/badge/Rust-Playground-critical"/> </a>
 </figure>
 </p>
 <p>Async is all the rage. Python, rust, go. Pick your language and chances are it&rsquo;s got some form of <code>async / await</code> going. If you&rsquo;ve never worked with <code>async / await</code> before this can all be somewhat confusing, to put it mildly. We&rsquo;ll take a high level overview of asynchronous programming in general before making our way to rust, where we&rsquo;ll look at the current state of async&mdash;what it is, how to do it, and how it all works.</p>
@@ -186,23 +186,23 @@ if (!doNotTrack) {
 <pre><code class="language-rust">use tokio::{self, time};
 use tokio::time::{Duration, Instant};
 
-async fn slow_request(number: u32, secs: u64) {
-    time::sleep(Duration::from_secs(secs)).await;
+async fn slow_request(number: u32, ms: u64) {
+    time::sleep(Duration::from_millis(ms)).await;
     println!(&quot;Response {} received!&quot;, number);
 }
 
 #[tokio::main]
 async fn main() {
-    slow_request(1, 2);
-    slow_request(2, 3);
+    slow_request(1, 2000);
+    slow_request(2, 3000);
 }
 </code></pre>
 <p>Although this code looks asynchronous, when we run it nothing prints to stdout. What gives? Well, even though we&rsquo;ve configured our runtime with the <code>#[tokio::main]</code> macro, we haven&rsquo;t asked it to execute anything. Each call to <code>slow_request</code> returns a future which is simply dropped and never executed. To execute the futures returned by <code>slow_request</code> we must <code>.await</code> them.</p>
 <pre><code class="language-rust">#[tokio::main]
 async fn main() {
     let start = Instant::now();
-    slow_request(1, 2).await;
-    slow_request(2, 3).await;
+    slow_request(1, 2000).await;
+    slow_request(2, 3000).await;
     println!(&quot;Finished in {} ms&quot;, start.elapsed().as_millis());
 }
 </code></pre>
@@ -215,8 +215,8 @@ Finished in 5000 ms
 <pre><code class="language-rust">#[tokio::main]
 async fn main() {
     let start = Instant::now();
-    let t1 = tokio::spawn(slow_request(1, 2));
-    slow_request(2, 3).await;
+    tokio::spawn(slow_request(1, 2000));
+    slow_request(2, 3000).await;
     println!(&quot;Finished in {} ms&quot;, start.elapsed().as_millis());
 }
 </code></pre>
@@ -229,8 +229,8 @@ Finished in 3000 ms
 <p>Let&rsquo;s build off of our previous example and prove that an asynchronous program can indeed run multiple tasks concurrently on a single thread. By default the <code>#[tokio::main]</code> macro uses a multi-threaded work stealing scheduler, however, we can ask it to utilize just a single thread by setting <code>flavor = &quot;current_thread&quot;</code>. We&rsquo;ll verify that this is indeed the case by re-writing <code>slow_request</code> to also print the id of the current thread.</p>
 <pre><code class="language-rust">use std::thread;
 
-async fn slow_request(number:u32, secs: u64) {
-    time::sleep(Duration::from_secs(secs)).await;
+async fn slow_request(number:u32, ms: u64) {
+    time::sleep(Duration::from_millis(ms)).await;
     println!(&quot;Response {} received on {:?}!&quot;, number, thread::current().id());
 }
 
@@ -238,10 +238,10 @@ async fn slow_request(number:u32, secs: u64) {
 async fn main() {
     let start = Instant::now();
 
-    let t1 = tokio::spawn(slow_request(1, 2));
-    let t2 = tokio::spawn(slow_request(2, 4));
-    let t3 = tokio::spawn(slow_request(3, 3));
-    let t4 = tokio::spawn(slow_request(4, 1));
+    let t1 = tokio::spawn(slow_request(1, 2000));
+    let t2 = tokio::spawn(slow_request(2, 4000));
+    let t3 = tokio::spawn(slow_request(3, 3000));
+    let t4 = tokio::spawn(slow_request(4, 1000));
     tokio::join!(t1, t2, t3, t4);
 
     println!(&quot;Finished in {} ms&quot;, start.elapsed().as_millis());
@@ -331,8 +331,8 @@ async fn main() {
 Response 1 received!
 Finished in 500 ms
 </code></pre>
-<p>Yikes. That&rsquo;s a lot of polls. The issue is that our implementation of <code>poll</code> causes the runtime to repeatedly poll an instance of <code>Delay</code>, which is a shame because we know at the moment a <code>Delay</code> is created that it will not return <code>Poll::Ready</code> until enough time has passed. It&rsquo;d be much better if we could let the runtime know to only call <code>poll</code> again when a future is ready to progress. For example, were we reading bytes from a socket, we&rsquo;d only want to poll the future when the socket has received new bytes to be read.</p>
-<p>Enter Wakers. A <code>Waker</code> is a handle for waking a task by notifying the runtime that it is ready to be executed. In our implementation of <code>poll</code>, we get a reference to a future&rsquo;s <code>Waker</code> via its <code>Context</code> and immediately call <code>.wake()</code> to re-schedule the task for execution, resulting in a busy loop. Instead, let&rsquo;s spawn a timer thread to sleep until we know a <code>Delay</code> is ready to complete. This should result in <code>poll</code> only being called twice, once when the <code>Delay</code> is created and once when the required delay has expired.</p>
+<p>Yikes. That&rsquo;s a lot of calls to <code>poll</code>. The issue is that our implementation of <code>poll</code> causes the runtime to repeatedly poll an instance of <code>Delay</code>, which is a shame because we know at the moment a <code>Delay</code> is created that it will not return <code>Poll::Ready</code> until enough time has passed. It&rsquo;d be much better if we could let the runtime know to only call <code>poll</code> again when a future is ready to progress. For example, were we reading bytes from a socket, we&rsquo;d only want to poll the future when the socket has received new bytes to be read.</p>
+<p>Enter Wakers. A <code>Waker</code> is a handle for waking a task by notifying the runtime that it is ready to be executed. In our implementation of <code>poll</code>, we get a reference to a future&rsquo;s <code>Waker</code> via its <code>Context</code> and immediately call <code>.wake()</code> to re-schedule the task for execution, resulting in a busy loop. Instead, let&rsquo;s spawn a timer thread to sleep until we know a <code>Delay</code> is ready to complete. This should result in <code>poll</code> only being called twice, once when the <code>Delay</code> is created and once when the delay has expired.</p>
 <pre><code class="language-rust">impl Future for Delay {
     type Output = ();
 
@@ -367,7 +367,7 @@ Finished in 500 ms
 <p>Nice, right?</p>
 <h2 id="summary">Summary<a class="anchor" href="#summary">#</a></h2>
 <p>We&rsquo;ve taken a long look at async in rust, starting with futures, which must be submitted to the runtime for execution by calling <code>.await</code>, and ending with <code>poll</code> and <code>Waker</code>, which are the means by which the runtime knows how to pause and resume tasks. Along the way we took a high level overview of asynchronous programming in general, inclduing one of its main advantages&mdash;the ability to run multiple tasks concurrently on a single thread&mdash;which we saw in action when we ran several tasks on a single-threaded <code>tokio</code> runtime.</p>
-<p>Asynchronous programming isn&rsquo;t always straightforward. We hope this post gives comfort to fellow newcomers looking to get the hang of async in rust. Rust&rsquo;s design goal is for asynchronous programming to be as easy as synchronous programming, but with greater expressivity. While I can&rsquo;t say we&rsquo;re there yet, rust&rsquo;s async story is one I look forward to reading more about in the future.</p>
+<p>As we&rsquo;ve seen, asynchronous programming isn&rsquo;t always straightforward. We hope this post gives comfort to fellow newcomers looking to just get the hang of async in rust. Rust&rsquo;s design goal is for asynchronous programming to be as easy as synchronous programming, but with greater expressivity. While I can&rsquo;t say we&rsquo;re there yet, rust&rsquo;s async story is one I look forward to reading more on in the future.</p>
 
 
               
