@@ -365,7 +365,7 @@ Response 1 received!
 Finished in 500 ms
 </code></pre>
 <p>Nice, right?</p>
-<h2 id="summary">Summary<a class="anchor" href="#summary">#</a></h2>
+<h2 id="conclusion">Conclusion<a class="anchor" href="#conclusion">#</a></h2>
 <p>We&rsquo;ve taken a long look at async in rust, starting with futures, which must be submitted to the runtime for execution by calling <code>.await</code>, and ending with <code>poll</code> and <code>Waker</code>, which are the means by which the runtime knows how to pause and resume tasks. Along the way we took a high level overview of asynchronous programming in general, inclduing one of its main advantages&mdash;the ability to run multiple tasks concurrently on a single thread&mdash;which we saw in action when we ran several tasks on a single-threaded <code>tokio</code> runtime.</p>
 <p>As we&rsquo;ve seen, asynchronous programming isn&rsquo;t always straightforward. We hope this post gives comfort to fellow newcomers looking to just get the hang of async in rust. Rust&rsquo;s design goal is for asynchronous programming to be as easy as synchronous programming, but with greater expressivity. While I can&rsquo;t say we&rsquo;re there yet, rust&rsquo;s async story is one I look forward to reading more on in the future.</p>
 
