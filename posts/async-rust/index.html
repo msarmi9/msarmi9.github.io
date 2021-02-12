@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="language" content="en">
   <meta name="description" content="Asynchronous programming in Rust: what it is, how to do it, and why we should care.">
-  <meta name="keywords" content="rust , async">
+  <meta name="keywords" content="rust , rustlang , async">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -122,40 +122,40 @@ if (!doNotTrack) {
     <img src="https://img.shields.io/badge/Rust-Playground-critical"/> </a>
 </figure>
 </p>
-<p>Async is all the rage. Python, rust, go. Pick your language and chances are it&rsquo;s got some form of <code>async / await</code> going. If you&rsquo;ve never worked with <code>async / await</code> before this can all be somewhat confusing, to put it mildly. In this post we&rsquo;ll take a high level overview of asynchronous programming in general before making our way to rust, where we&rsquo;ll look at the current state of async&mdash;what it is, how to do it, and how it all works.</p>
+<p>Async is all the rage. Python, Rust, Go. Pick your language and chances are it&rsquo;s got some form of <code>async / await</code> going. If you&rsquo;ve never worked with <code>async / await</code> before this can all be somewhat confusing, to put it mildly. In this post we&rsquo;ll take a high level overview of asynchronous programming in general before making our way to Rust, where we&rsquo;ll look at the current state of async&mdash;what it is, how to do it, and how it all works.</p>
 <h2 id="what-is-asynchronous-programming-and-why-should-we-care">What Is Asynchronous Programming and Why Should We Care<a class="anchor" href="#what-is-asynchronous-programming-and-why-should-we-care">#</a></h2>
 <p>Most programs are synchronous. They execute line by line in the order they&rsquo;re written. Whenever we encounter an operation that can&rsquo;t be completed immediately, we must wait until it finishes before we can proceed. Establishing a TCP connection, for example, requires several exchanges over a network, which can take some time, during which our program is unable to work on anything else. In other words, synchronous operations <em>block</em> the thread on which our program executes.</p>
 <p>Asynchronous operations, on the other hand, are non-blocking by design. Operations that can&rsquo;t complete immediately are suspended to the &ldquo;background&rdquo; (more on this later), allowing the current thread to work on other tasks. Once an async operation finishes, the task is unsuspended and execution resumes where it left off. By working jointly on multiple tasks a program can avoid being idle. When one task can&rsquo;t progress because it&rsquo;s waiting on another resource (e.g. bytes from a socket), we simply switch to another task that can. This brings us to our first observation about asynchronous programming in general: we only benefit if there is other work to be done while we wait on an operation to finish.</p>
 <p>For example, if we&rsquo;re running on a single thread and need to tackle a CPU-bound task, we have no choice but to wait until the task finishes before we can move onto the next one. Async won&rsquo;t help us here. However, if we&rsquo;re running on a thread pool, we could spawn the CPU-bound task onto another thread and call out to it asynchronously from the current thread, allowing us to do other work while we wait for it to finish. Which brings us to our second observation about asynchronous programming: it excels at any task that involves a lot of waiting. This could be a network call or a CPU-bound task as we&rsquo;ve discussed, or a database query or RPC call. Whatever it is, if we have to wait, chances are async can help.</p>
-<h2 id="concurrency-and-parallelism">Concurrency And Parallelism<a class="anchor" href="#concurrency-and-parallelism">#</a></h2>
-<p>Before we dig into the meat and potatoes of async in rust, let&rsquo;s make sure we&rsquo;re on the same page regarding concurrency and parallelism. Concurrency refers to the act of working on multiple tasks at once, though not necessarily at the same time. For instance, if you alternate between doing the dishes and mopping the floor, you&rsquo;re working on both tasks concurrently but not in parallel. To do both in parallel you&rsquo;d need two distinct individuals, one dedicated to each task. Parallelism is one way of achieving concurrency. Async is another, at least in some contexts. One of the advantages of asynchronous programming is that it allows you to work on many tasks concurrently without having to work on them in parallel via threads, which can be costly to spawn and run, depending on the implementation. As we&rsquo;ll see, async makes it possible to run many tasks concurrently on a single thread.</p>
+<h2 id="concurrency-and-parallelism">Concurrency and Parallelism<a class="anchor" href="#concurrency-and-parallelism">#</a></h2>
+<p>Before we dig into the meat and potatoes of async in Rust, let&rsquo;s make sure we&rsquo;re on the same page regarding concurrency and parallelism. Concurrency refers to the act of working on multiple tasks at once, though not necessarily at the same time. For instance, if you alternate between doing the dishes and mopping the floor, you&rsquo;re working on both tasks concurrently but not in parallel. To do both in parallel you&rsquo;d need two distinct individuals, one dedicated to each task. Parallelism is one way of achieving concurrency. Async is another, at least in some contexts. One of the advantages of asynchronous programming is that it allows you to work on many tasks concurrently without having to work on them in parallel via threads, which can be costly to spawn and run, depending on the implementation. As we&rsquo;ll see, async makes it possible to run many tasks concurrently on a single thread.</p>
 <h2 id="async-and-the-future">Async and the Future<a class="anchor" href="#async-and-the-future">#</a></h2>
-<p>Rust enables asynchronous programming via two keywords: <code>async</code> &amp; <code>.await</code>. Functions marked as <code>async fn</code> are transformed at compile time into operations that can run asynchronously. Async functions are called just like any other function, except instead of executing when called, an async function returns a value representing the computation. This value is called a <code>Future</code>. In rust a future is anything that implements the <a href="https://doc.rust-lang.org/std/future/trait.Future.html" 
+<p>Rust enables asynchronous programming via two keywords: <code>async</code> &amp; <code>.await</code>. Functions marked as <code>async fn</code> are transformed at compile time into operations that can run asynchronously. Async functions are called just like any other function, except instead of executing when called, an async function returns a value representing the computation. This value is called a <code>Future</code>. In Rust a future is anything that implements the <a href="https://doc.Rust-lang.org/std/future/trait.Future.html" 
   
    target="_blank" rel="noreferrer noopener" 
 >std::future::Future</a>
  trait provided by the standard library. Every <code>async fn</code> implicitly returns a <code>Future</code>. For example, the async function</p>
-<pre><code class="language-rust">async fn hello() -&gt; String {
+<pre><code class="language-Rust">async fn hello() -&gt; String {
     &quot;hi, there!&quot;.to_string()
 }
 </code></pre>
 <p>desugars to an ordinary function whose return type is an anonymous type implementing the future trait.</p>
-<pre><code class="language-rust">fn hello() -&gt; impl Future&lt;Output = String&gt; {
+<pre><code class="language-Rust">fn hello() -&gt; impl Future&lt;Output = String&gt; {
     async {
         &quot;hi, there!&quot;.to_string()
     }
 }
 </code></pre>
-<p>The inner <a href="https://doc.rust-lang.org/reference/expressions/block-expr.html#async-blocks" 
+<p>The inner <a href="https://doc.Rust-lang.org/reference/expressions/block-expr.html#async-blocks" 
   
    target="_blank" rel="noreferrer noopener" 
 >async block</a>
- is a variant of rust&rsquo;s ordinary block expressions which evaluates to an anonymous future type, similar to how closures return anonymous types implementing one of the <code>std::ops::Fn</code> traits.</p>
-<p>Futures lie at the heart of async in rust but are not the whole story. A key distinction between rust and other languages like javascript is that in rust async operations are <em>lazy</em>. By themselves futures do nothing. They require a <a href="https://stackoverflow.com/a/3900574" 
+ is a variant of Rust&rsquo;s ordinary block expressions which evaluates to an anonymous future type, similar to how closures return anonymous types implementing one of the <code>std::ops::Fn</code> traits.</p>
+<p>Futures lie at the heart of async in Rust but are not the whole story. A key distinction between Rust and other languages like JS is that in Rust async operations are <em>lazy</em>. By themselves futures do nothing. They require a <a href="https://stackoverflow.com/a/3900574" 
   
    target="_blank" rel="noreferrer noopener" 
 >runtime</a>
-, which provides, among other things, a task scheduler and an I/O driver backed by the operating system&rsquo;s own event queue (epoll, kqueue, etc.). A very widely used runtime in rust is provided by the <a href="https://docs.rs/tokio/1.0.2/tokio/runtime/index.html" 
+, which provides, among other things, a task scheduler and an I/O driver backed by the operating system&rsquo;s own event queue (epoll, kqueue, etc.). A very widely used runtime in Rust is provided by the <a href="https://docs.rs/tokio/1.0.2/tokio/runtime/index.html" 
   
    target="_blank" rel="noreferrer noopener" 
 >tokio</a>
@@ -163,12 +163,12 @@ if (!doNotTrack) {
   
    target="_blank" rel="noreferrer noopener" 
 >async-std</a>
-. All asynchronous behaviour in rust occurs within the context of a runtime.</p>
-<p>Now, you might be wondering why rust doesn&rsquo;t just ship with a built-in runtime. The reason is rust&rsquo;s commitment to <a href="https://aturon.github.io/blog/2016/08/11/futures/" 
+. All asynchronous behaviour in Rust occurs within the context of a runtime.</p>
+<p>Now, you might be wondering why Rust doesn&rsquo;t just ship with a built-in runtime. The reason is Rust&rsquo;s commitment to <a href="https://aturon.github.io/blog/2016/08/11/futures/" 
   
    target="_blank" rel="noreferrer noopener" 
 >zero-cost abstractions</a>
-. Any runtime imposes a performance overhead that all programs must pay regardless of whether they require it. Rust chooses to instead only define asynchronous behaviour via standard library traits like <code>Future</code>, leaving the implementation to the larger rust ecosystem.</p>
+. Any runtime imposes a performance overhead that all programs must pay regardless of whether they require it. Rust chooses to instead only define asynchronous behaviour via standard library traits like <code>Future</code>, leaving the implementation to the larger Rust ecosystem.</p>
 <p>⚠️ <strong>Note:</strong> An unfortunate side effect of this decision is that it forces crates to depend on a specific choice of runtime. For instance, <a href="https://docs.rs/reqwest/0.11.0/reqwest/" 
   
    target="_blank" rel="noreferrer noopener" 
@@ -177,13 +177,13 @@ if (!doNotTrack) {
   
    target="_blank" rel="noreferrer noopener" 
 >surf</a>
- requires <code>async_std</code>. This can be a big source of confusion for newcomers just looking to get the hang of async in rust (i.e. me).</p>
+ requires <code>async_std</code>. This can be a big source of confusion for newcomers just looking to get the hang of async in Rust (i.e. me).</p>
 <h2 id="tasks">Tasks<a class="anchor" href="#tasks">#</a></h2>
 <p>The runtime doesn&rsquo;t interface with individual futures directly but instead groups them into <em>tasks</em>. A task is a lightweight, non-blocking unit of execution, similar to an OS thread, except instead of being managed by the OS scheduler, tasks are managed by the runtime. This pattern generally goes by the name <em>green threads</em>, after the java library that originally implemented them. Because tasks are cheap to create and run, a single OS thread can handle many tasks, enabling a program to run concurrently on a single thread (although a typical async program will likely have many, many tasks scheduled across multiple threads).</p>
 <p>A key attribute of tasks is that they exhibit what is known as <em>cooperative multitasking</em>. A task is allowed to run until it <em>yields</em>, signaling to the runtime that it cannot currently progress any further. This allows the runtime to switch to another task that can progress. Tasks yield via calls to <code>.await</code>. Any invocation of <code>.await</code> within an async function or block yields control back to the runtime, which is then free to swap the current task for a different one.</p>
 <h2 id="when-to-await">When to <code>.await</code><a class="anchor" href="#when-to-await">#</a></h2>
-<p>The most confusing thing about async in rust is when to <code>.await</code>. Take the following example, which simulates a delayed response from, say, an http request or database query.</p>
-<pre><code class="language-rust">use tokio::{self, time};
+<p>The most confusing thing about async in Rust is when to <code>.await</code>. Take the following example, which simulates a delayed response from, say, an http request or database query.</p>
+<pre><code class="language-Rust">use tokio::{self, time};
 use tokio::time::{Duration, Instant};
 
 async fn slow_request(number: u32, ms: u64) {
@@ -198,7 +198,7 @@ async fn main() {
 }
 </code></pre>
 <p>Although this code looks asynchronous, when we run it nothing happens. What gives? Well, even though we&rsquo;ve configured our runtime with the <code>#[tokio::main]</code> macro, we haven&rsquo;t asked it to execute anything. Each call to <code>slow_request</code> returns a future which is simply dropped and never executed. To execute the futures returned by <code>slow_request</code> we must <code>.await</code> them.</p>
-<pre><code class="language-rust">#[tokio::main]
+<pre><code class="language-Rust">#[tokio::main]
 async fn main() {
     let start = Instant::now();
     slow_request(1, 2000).await;
@@ -212,7 +212,7 @@ Finished in 5000 ms
 </code></pre>
 <p>Now both requests finish successfully. But there&rsquo;s a problem. Since we&rsquo;re attempting to make two concurrent requests, our program should take only as long as the longest request, however, our program takes 5 seconds even though the longest request only takes 3 seconds. The issue is that both futures are running on the same task, the one implicitly spawned by the runtime.</p>
 <p>When we make the first call to <code>.await</code> the runtime is free to switch to another task, except there isn&rsquo;t any, so we&rsquo;re forced to wait until the first request finishes before we can make the second. In other words, our program executes <em>synchronously</em>, even though we&rsquo;re using <code>async / .await</code>. To execute both requests concurrently, we need to spawn another task.</p>
-<pre><code class="language-rust">#[tokio::main]
+<pre><code class="language-Rust">#[tokio::main]
 async fn main() {
     let start = Instant::now();
     tokio::spawn(slow_request(1, 2000));
@@ -220,14 +220,14 @@ async fn main() {
     println!(&quot;Finished in {} ms&quot;, start.elapsed().as_millis());
 }
 </code></pre>
-<pre><code>R4esponse 1 received!
+<pre><code>Response 1 received!
 Response 2 received!
 Finished in 3000 ms
 </code></pre>
 <p>Now our program runs in 3 seconds, as it should.</p>
 <h2 id="running-multiple-tasks-on-a-single-thread">Running Multiple Tasks On A Single Thread<a class="anchor" href="#running-multiple-tasks-on-a-single-thread">#</a></h2>
 <p>Let&rsquo;s build off of our previous example and prove that an asynchronous program can indeed run multiple tasks concurrently on a single thread. By default the <code>#[tokio::main]</code> macro uses a multi-threaded work stealing scheduler, however, we can ask it to utilize just a single thread by setting <code>flavor = &quot;current_thread&quot;</code>. We&rsquo;ll verify that this is indeed the case by re-writing <code>slow_request</code> to also print the id of the current thread.</p>
-<pre><code class="language-rust">use std::thread;
+<pre><code class="language-Rust">use std::thread;
 
 async fn slow_request(number:u32, ms: u64) {
     time::sleep(Duration::from_millis(ms)).await;
@@ -256,11 +256,11 @@ Finished in 4000 ms
 <p>Note that we call <code>tokio::join!</code> here instead of simply <code>.await</code>ing the last task as in our previous example. This is because here the last request has the shortest delay, hence were we to <code>.await</code> the last task, it would finish before the others and execution would proceed to the next statement in <code>main</code>, the call to <code>println!</code>, which would complete immediately and terminate our program before the remaining tasks have finished. Calling <code>tokio::join!</code> lets the runtime know that we want to wait until <em>all</em> tasks have completed before moving on.</p>
 <h2 id="futures-in-depth">Futures In Depth<a class="anchor" href="#futures-in-depth">#</a></h2>
 <p><!-- raw HTML omitted -->
-<figure><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=c66dcd1e3c10f3dd86c50a0f486e4dae">
+<figure><a href="https://play.Rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=c66dcd1e3c10f3dd86c50a0f486e4dae">
     <img src="https://img.shields.io/badge/Rust-Playground-critical"/> </a>
 </figure>
 </p>
-<p>So far we&rsquo;ve taken a look at tasks, futures, and the runtime. We know that tasks are made up of futures and are submitted to the runtime for execution, and that each call to <code>.await</code> causes the current task to yield to the runtime, allowing the runtime to switch to another task. But how does the runtime know when to return to the original task? To answer this question, we need to take a closer look at the <a href="https://doc.rust-lang.org/std/future/trait.Future.html" 
+<p>So far we&rsquo;ve taken a look at tasks, futures, and the runtime. We know that tasks are made up of futures and are submitted to the runtime for execution, and that each call to <code>.await</code> causes the current task to yield to the runtime, allowing the runtime to switch to another task. But how does the runtime know when to return to the original task? To answer this question, we need to take a closer look at the <a href="https://doc.Rust-lang.org/std/future/trait.Future.html" 
   
    target="_blank" rel="noreferrer noopener" 
 >Future</a>
@@ -269,13 +269,13 @@ Finished in 4000 ms
    target="_blank" rel="noreferrer noopener" 
 >tokio tutorial</a>
 .</p>
-<pre><code class="language-rust">pub trait Future {
+<pre><code class="language-Rust">pub trait Future {
     type Output;
     fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Self::Output&gt;;
 }
 </code></pre>
 <p>The <code>Future</code> trait consists of a single method <code>poll</code>, which returns an enum <code>Poll</code> that tells the runtime if a future has completed or is still in progress.</p>
-<pre><code class="language-rust">pub enum Poll&lt;T&gt; {
+<pre><code class="language-Rust">pub enum Poll&lt;T&gt; {
     Ready(T),
     Pending,
 }
@@ -283,7 +283,7 @@ Finished in 4000 ms
 <p><code>Pin</code> enables borrowing across <code>.await</code> points and <code>Context</code> provides a reference to a <code>Waker</code>, which we&rsquo;ll return to shortly.</p>
 <p>If a future has finished executing, <code>poll</code> returns <code>Poll::Ready(val)</code>, where <code>val</code> is the value returned by the future. On the other hand, if a future is not able to complete (usually because it&rsquo;s waiting on some other resource), <code>poll</code> returns <code>Poll::Pending</code>, which informs the runtime that the future will complete at a later time and that <code>poll</code> should be called again.</p>
 <p>But when should we poll again? The simplest solution would be to loop over all spawned tasks and poll them repeatedly, and this does indeed work, albeit not terribly efficiently because the majority of the time a future will return <code>Poll::Pending</code>. Let&rsquo;s see how it&rsquo;s done and then work towards a better solution. We&rsquo;ll implement a <code>Delay</code> future and modify <code>slow_request</code> to use <code>Delay</code> instead of <code>tokio::time::sleep</code> to simulate the delayed response. For good measure we&rsquo;ll also track how many times <code>Delay</code> is polled.</p>
-<pre><code class="language-rust">use std::future::Future;
+<pre><code class="language-Rust">use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::time::{Duration, Instant};
@@ -318,7 +318,7 @@ impl Future for Delay {
 }
 </code></pre>
 <p>Our implementation of <code>poll</code> is more or less straightforward, with the exception of the call to <code>waker</code>, which we&rsquo;ll examine in a second. Each call to <code>poll</code> simply checks if enough time has passed, returning <code>Poll::Ready</code> if it has and <code>Poll::Pending</code> if it hasn&rsquo;t. Let&rsquo;s see how it runs.</p>
-<pre><code class="language-rust">async fn slow_request(number: u32, ms: u64) {
+<pre><code class="language-Rust">async fn slow_request(number: u32, ms: u64) {
     Delay::new(Duration::from_millis(ms)).await;
     println!(&quot;Response {} received!&quot;, number);
 }
@@ -336,7 +336,7 @@ Finished in 500 ms
 </code></pre>
 <p>Yikes. That&rsquo;s a lot of polls. The issue is that our implementation of <code>poll</code> causes the runtime to repeatedly poll an instance of <code>Delay</code>, which is a shame because we know at the moment a <code>Delay</code> is created that it will not return <code>Poll::Ready</code> until enough time has passed. It&rsquo;d be much better if we could let the runtime know to only call <code>poll</code> again when a future is ready to progress. For example, were we reading bytes from a socket, we&rsquo;d only want to poll the future when the socket has received new bytes to be read.</p>
 <p>Enter Wakers. A <code>Waker</code> is a handle for waking a task by notifying the runtime that it is ready to be executed. In our implementation of <code>poll</code>, we get a reference to a future&rsquo;s <code>Waker</code> via its <code>Context</code> and immediately call <code>.wake()</code> to re-schedule the task for execution, resulting in a busy loop. Instead, let&rsquo;s spawn a timer thread to sleep until we know a <code>Delay</code> is ready to complete. This should result in <code>poll</code> only being called twice, once when the <code>Delay</code> is first <code>.await</code>ed and once when the delay has expired.</p>
-<pre><code class="language-rust">impl Future for Delay {
+<pre><code class="language-Rust">impl Future for Delay {
     type Output = ();
 
     fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Self::Output&gt; {
@@ -369,8 +369,8 @@ Finished in 500 ms
 </code></pre>
 <p>Nice, right?</p>
 <h2 id="conclusion">Conclusion<a class="anchor" href="#conclusion">#</a></h2>
-<p>We&rsquo;ve taken a long look at async in rust, starting with futures, which must be submitted to the runtime for execution by <code>.await</code>ing them, and ending with <code>poll</code> and <code>Waker</code>, which are the means by which the runtime knows how to suspend and resume tasks. Along the way we took a high level overview of asynchronous programming in general, inclduing one of its main advantages&mdash;the ability to run multiple tasks concurrently on a single thread&mdash;which we saw in action when we ran several tasks concurrently on a single-threaded <code>tokio</code> runtime.</p>
-<p>As we&rsquo;ve seen, asynchronous programming isn&rsquo;t always straightforward. We hope this post gives comfort to fellow new rustaceans just looking to get the hang of async in rust. Rust&rsquo;s design goal is for asynchronous programming to be as easy as synchronous programming, but with greater expressivity. While I can&rsquo;t say we&rsquo;re there yet, rust&rsquo;s async story is one I look forward to reading more about in the future.</p>
+<p>We&rsquo;ve taken a long look at async in Rust, starting with futures, which must be submitted to the runtime for execution by <code>.await</code>ing them, and ending with <code>poll</code> and <code>Waker</code>, which are the means by which the runtime knows how to suspend and resume tasks. Along the way we took a high level overview of asynchronous programming in general, inclduing one of its main advantages&mdash;the ability to run multiple tasks concurrently on a single thread&mdash;which we saw in action when we ran several tasks concurrently on a single-threaded <code>tokio</code> runtime.</p>
+<p>As we&rsquo;ve seen, asynchronous programming isn&rsquo;t always straightforward. We hope this post gives comfort to fellow new Rustaceans just looking to get the hang of async in Rust. Rust&rsquo;s design goal is for asynchronous programming to be as easy as synchronous programming, but with greater expressivity. While I can&rsquo;t say we&rsquo;re there yet, Rust&rsquo;s async story is one I look forward to reading more about in the future.</p>
 
 
               

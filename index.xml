@@ -14,7 +14,7 @@
       <pubDate>Fri, 05 Feb 2021 16:03:23 -0800</pubDate>
       
       <guid>https://msarmi9.github.io/posts/async-rust/</guid>
-      <description>Async is all the rage. Python, rust, go. Pick your language and chances are it&amp;rsquo;s got some form of async / await going. If you&amp;rsquo;ve never worked with async / await before this can all be somewhat confusing, to put it mildly. In this post we&amp;rsquo;ll take a high level overview of asynchronous programming in general before making our way to rust, where we&amp;rsquo;ll look at the current state of async&amp;mdash;what it is, how to do it, and how it all works.</description>
+      <description>Async is all the rage. Python, Rust, Go. Pick your language and chances are it&amp;rsquo;s got some form of async / await going. If you&amp;rsquo;ve never worked with async / await before this can all be somewhat confusing, to put it mildly. In this post we&amp;rsquo;ll take a high level overview of asynchronous programming in general before making our way to Rust, where we&amp;rsquo;ll look at the current state of async&amp;mdash;what it is, how to do it, and how it all works.</description>
     </item>
     
     <item>
