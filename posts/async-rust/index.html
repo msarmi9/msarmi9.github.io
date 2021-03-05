@@ -117,10 +117,10 @@ if (!doNotTrack) {
           </header>
           <article class="post__content">
               
-<p><!-- raw HTML omitted -->
-<figure><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=9b5bd9d535e09e4b224173ce5090445f">
-    <img src="https://img.shields.io/badge/Rust-Playground-critical"/> </a>
-</figure>
+<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=9b5bd9d535e09e4b224173ce5090445f" 
+  
+   target="_blank" rel="noreferrer noopener" 
+><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="rust-playground"></a>
 </p>
 <p>Async is all the rage. Python, Rust, Go. Pick your language and chances are it&rsquo;s got some form of <code>async / await</code> going. If you&rsquo;ve never worked with <code>async / await</code> before this can all be somewhat confusing, to put it mildly. In this post we&rsquo;ll take a high level overview of asynchronous programming in general before making our way to Rust, where we&rsquo;ll look at the current state of async&mdash;what it is, how to do it, and how it all works.</p>
 <h2 id="what-is-asynchronous-programming-and-why-should-we-care">What Is Asynchronous Programming and Why Should We Care<a class="anchor" href="#what-is-asynchronous-programming-and-why-should-we-care">#</a></h2>
@@ -255,10 +255,10 @@ Finished in 4000 ms
 </code></pre>
 <p>Note that we call <code>tokio::join!</code> here instead of simply <code>.await</code>ing the last task as in our previous example. This is because here the last request has the shortest delay, hence were we to <code>.await</code> the last task, it would finish before the others and execution would proceed to the next statement in <code>main</code>, the call to <code>println!</code>, which would complete immediately and terminate our program before the remaining tasks have finished. Calling <code>tokio::join!</code> lets the runtime know that we want to wait until <em>all</em> tasks have completed before moving on.</p>
 <h2 id="futures-in-depth">Futures In Depth<a class="anchor" href="#futures-in-depth">#</a></h2>
-<p><!-- raw HTML omitted -->
-<figure><a href="https://play.Rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=c66dcd1e3c10f3dd86c50a0f486e4dae">
-    <img src="https://img.shields.io/badge/Rust-Playground-critical"/> </a>
-</figure>
+<p><a href="https://play.Rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=c66dcd1e3c10f3dd86c50a0f486e4dae" 
+  
+   target="_blank" rel="noreferrer noopener" 
+><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="rust-playground"></a>
 </p>
 <p>So far we&rsquo;ve taken a look at tasks, futures, and the runtime. We know that tasks are made up of futures and are submitted to the runtime for execution, and that each call to <code>.await</code> causes the current task to yield to the runtime, allowing the runtime to switch to another task. But how does the runtime know when to return to the original task? To answer this question, we need to take a closer look at the <a href="https://doc.Rust-lang.org/std/future/trait.Future.html" 
   
