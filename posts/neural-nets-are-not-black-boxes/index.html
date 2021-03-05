@@ -416,7 +416,7 @@ model = Sequential(layers, criterion)
 # Initialise optimizer and trainer
 optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
-trainer.train(10)
+trainer.train(5)
 </code></pre>
 <p><!-- raw HTML omitted --> </p>
 <table>
@@ -504,6 +504,7 @@ model = Sequential(layers, criterion)
 # Initialise optimizer and trainer
 optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
+trainer.train(5)
 </code></pre>
 <p><!-- raw HTML omitted --> </p>
 <table>
