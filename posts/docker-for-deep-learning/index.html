@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="language" content="en">
   <meta name="description" content="A guide to quickly getting a gpu-enabled container up and running on a remote server.">
-  <meta name="keywords" content="docker , aws , gpu">
+  <meta name="keywords" content="docker , aws , gpu , deep learning">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +21,7 @@
   <meta name="twitter:creator" content="https://twitter.com/msarmi9" />
   
 
-  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="/favicon.ico" />
 
 
   
@@ -35,10 +35,10 @@
   
   
     
-    <link type="text/css" rel="stylesheet" href="/css/post.min.f73f58b6c838a10145e8ccf7fc4325dbe662bc0d2ef228843913411d410deee3.css" integrity="sha256-9z9Ytsg4oQFF6Mz3/EMl2&#43;ZivA0u8iiEORNBHUEN7uM="/>
+    <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.0c3cb8f6759511d5f2095626bf6acb6ae0059537a9fae0097a52e79560dd787f.css" integrity="sha256-DDy49nWVEdXyCVYmv2rLauAFlTep&#43;uAJelLnlWDdeH8="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.ea6dfbc19ae2c893ec471cdb5796d65ba9d5c9450a29147cac06ed60632eeb92.css" integrity="sha256-6m37wZriyJPsRxzbV5bWW6nVyUUKKRR8rAbtYGMu65I="/>
   
   
    
@@ -124,7 +124,7 @@ if (!doNotTrack) {
 <p>The working directory for this post will be your project’s local git repository. While not a strict prerequisite of our goal of setting up a GPU enabled Docker container on AWS, it will make your life much easier by allowing you to simply <code>git clone</code> your GitHub repo on your EC2 instance.</p>
 <h2 id="step-1-the-docker-image">Step 1: The Docker Image<a class="anchor" href="#step-1-the-docker-image">#</a></h2>
 <p>The first step is to build the image we need to train a Deep Learning model. We’ll do that by adding the following Dockerfile to our repository.</p>
-<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <script type="application/javascript" src="https://gist.github.com/msarmi9/bae36b4f3045b24cc732c36cdde9b90f.js"></script>
 
 <p>The key component of this Dockerfile is the <code>nvidia/cuda</code> base image, which does all of the leg work needed for a container to access system GPUs. Your requirements file should contain all of the packages you need to train your model and will need to include Jupyter for the last <code>CMD</code> to work. If you have a script that trains your model, just replace the above <code>CMD</code> with the command that runs your script. You can also enable your favourite Jupyter extensions by adding <code>RUN jupyter contrib nbextension install</code> after the requirements step.</p>
@@ -174,7 +174,7 @@ if (!doNotTrack) {
 <ul class="tags__list">
     
     <li class="tag__item">
-        <a class="tag__link" href="https://msarmi9.github.io/tags/docker/">docker</a>
+        <a class="tag__link" href="https://msarmi9.github.io/tags/programming/">programming</a>
     </li></ul>
 
  <div class="pagination">
@@ -197,27 +197,39 @@ if (!doNotTrack) {
   
      
     
-      <a class="social-icons__link" rel="me" title="Twitter"
-         href="https://twitter.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Twitter"
+        href="https://twitter.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/twitter.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="GitHub"
-         href="https://github.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="GitHub"
+        href="https://github.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/github.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="Email"
-         href="mailto:matthewcs@me.com"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Email"
+        href="mailto:matthewcs@me.com"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/email.svg')"></div>
       </a>
     
@@ -237,7 +249,7 @@ if (!doNotTrack) {
    
 
   
-  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  <script src="/js/index.min.575dda8d49ee02639942c63564273e6da972ab531dda26a08800bdcb477cbd7f.js" integrity="sha256-V13ajUnuAmOZQsY1ZCc&#43;balyq1Md2iagiAC9y0d8vX8=" crossorigin="anonymous"></script>
   
   
   <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>

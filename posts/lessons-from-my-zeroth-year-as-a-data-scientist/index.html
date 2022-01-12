@@ -21,7 +21,7 @@
   <meta name="twitter:creator" content="https://twitter.com/msarmi9" />
   
 
-  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="/favicon.ico" />
 
 
   
@@ -35,10 +35,10 @@
   
   
     
-    <link type="text/css" rel="stylesheet" href="/css/post.min.f73f58b6c838a10145e8ccf7fc4325dbe662bc0d2ef228843913411d410deee3.css" integrity="sha256-9z9Ytsg4oQFF6Mz3/EMl2&#43;ZivA0u8iiEORNBHUEN7uM="/>
+    <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.0c3cb8f6759511d5f2095626bf6acb6ae0059537a9fae0097a52e79560dd787f.css" integrity="sha256-DDy49nWVEdXyCVYmv2rLauAFlTep&#43;uAJelLnlWDdeH8="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.ea6dfbc19ae2c893ec471cdb5796d65ba9d5c9450a29147cac06ed60632eeb92.css" integrity="sha256-6m37wZriyJPsRxzbV5bWW6nVyUUKKRR8rAbtYGMu65I="/>
   
   
    
@@ -137,14 +137,12 @@ Here are, in no particular order, a few of the things I’ve learned over the pa
 <p>Recently, it’s been proposed that every dataset have an accompanying <em>datasheet</em>, which answers the above questions and many more. <a href="https://arxiv.org/pdf/1803.09010.pdf" 
   
    target="_blank" rel="noreferrer noopener" 
->This paper</a>
- describes the concept in detail and is one I highly recommend.</p>
+>This paper</a> describes the concept in detail and is one I highly recommend.</p>
 <h2 id="be-the-algorithm">Be the Algorithm<a class="anchor" href="#be-the-algorithm">#</a></h2>
 <p>When it comes to modeling, knowing your data is not enough. You need to understand what your model does. Often, the best way to do that is to be the algorithm. Take, for example, <a href="https://www.kaggle.com/c/quora-question-pairs" 
   
    target="_blank" rel="noreferrer noopener" 
->this Kaggle competition</a>
- that asks you to decide if two questions are asking the same thing. Before writing a single line of code, I grabbed 10 random pairs of questions and classified them as similar or not using nothing but my own brain.</p>
+>this Kaggle competition</a> that asks you to decide if two questions are asking the same thing. Before writing a single line of code, I grabbed 10 random pairs of questions and classified them as similar or not using nothing but my own brain.</p>
 <p>Why? I wanted to understand what exactly I, a human, look for when trying to judge if two questions are asking the same thing so that I could understand what my model, a computer, might struggle with or excel at. Were there dead giveaways that I could expect my model to pick up on? Or was the task too difficult to expect even decent results? If I couldn’t perform reasonably well at this task, I wasn’t going to hold my breathe that any model could.</p>
 <p>I ended up classifying those 10 questions at 80% accuracy — just a smidgen under the 81% accuracy that my final model, an RNN, achieved. Afterwards, I repeated the same exercise of classifying questions myself twice more and got 80% each time. This told me that 80% was probably the best accuracy I could hope for given the data I had. In a way, I was the final baseline against which I could evaluate my model’s performance.</p>
 <h2 id="dont-stop-at-90">Don’t Stop at 90%<a class="anchor" href="#dont-stop-at-90">#</a></h2>
@@ -196,27 +194,39 @@ Here are, in no particular order, a few of the things I’ve learned over the pa
   
      
     
-      <a class="social-icons__link" rel="me" title="Twitter"
-         href="https://twitter.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Twitter"
+        href="https://twitter.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/twitter.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="GitHub"
-         href="https://github.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="GitHub"
+        href="https://github.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/github.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="Email"
-         href="mailto:matthewcs@me.com"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Email"
+        href="mailto:matthewcs@me.com"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/email.svg')"></div>
       </a>
     
@@ -236,7 +246,7 @@ Here are, in no particular order, a few of the things I’ve learned over the pa
    
 
   
-  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  <script src="/js/index.min.575dda8d49ee02639942c63564273e6da972ab531dda26a08800bdcb477cbd7f.js" integrity="sha256-V13ajUnuAmOZQsY1ZCc&#43;balyq1Md2iagiAC9y0d8vX8=" crossorigin="anonymous"></script>
   
   
   <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>

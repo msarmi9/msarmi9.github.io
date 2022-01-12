@@ -9,7 +9,7 @@
     <copyright>© 2021</copyright>
     <lastBuildDate>Fri, 05 Feb 2021 16:03:23 -0800</lastBuildDate><atom:link href="https://msarmi9.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Async Rust: Futures, Tasks, Wakers; Oh My!</title>
+      <title>Async Rust: Futures, Tasks, Wakers—Oh My!</title>
       <link>https://msarmi9.github.io/posts/async-rust/</link>
       <pubDate>Fri, 05 Feb 2021 16:03:23 -0800</pubDate>
       
@@ -52,21 +52,10 @@ Why? One of my favourite things about Docker is that it allows you to easily rep
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://msarmi9.github.io/books/</guid>
-      <description>Books to ❤️ Python Architecture Patterns with Python
-High Performance Python, 2nd Edition
-Fluent Python, 2nd Edition
-Rust The Rust Programming Language, 2018 Edition
-Programming Rust, 2nd Edition
-Refactoring to Rust
-Rust In Action
-Swift Classic CS Problems In Swift
-Advanced Swift
-Swift In Depth
-Deep Learning Deep Learning for Coders with fastai &amp;amp; PyTorch
-Deep Learning for Vision Systems
-Transfer Learning for NLP
-Generative Deep Learning
-GANs In Action</description>
+      <description>Books 📚 Python Architecture Patterns with Python Fluent Python, 2nd Edition High Performance Python, 2nd Edition
+Rust Programming Rust, 2nd Edition Refactoring to Rust Rust In Action The Rust Programming Language, 2018 Edition
+Swift Advanced Swift Swift In Depth
+Deep Learning Deep Learning for Coders with fastai &amp;amp; PyTorch Deep Learning for Vision Systems Deep Learning Patterns and Practices GANs In Action Generative Deep Learning Inside Deep Learning Transfer Learning for NLP</description>
     </item>
     
   </channel>

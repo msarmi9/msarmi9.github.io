@@ -2,12 +2,12 @@
 <html lang="en-us">
 
 <head>
-  <title>Async Rust: Futures, Tasks, Wakers; Oh My! | Matt&#39;s blog</title>
+  <title>Async Rust: Futures, Tasks, Wakers—Oh My! | Matt&#39;s blog</title>
 
   <meta charset="UTF-8">
   <meta name="language" content="en">
   <meta name="description" content="Asynchronous programming in Rust: what it is, how to do it, and why we should care.">
-  <meta name="keywords" content="rust , rustlang , async">
+  <meta name="keywords" content="rust , rustlang , async , programming">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,13 +15,13 @@
   
   
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Async Rust: Futures, Tasks, Wakers; Oh My!" />
+  <meta name="twitter:title" content="Async Rust: Futures, Tasks, Wakers—Oh My!" />
   <meta name="twitter:description" content="Asynchronous programming in Rust: what it is, how to do it, and why we should care."/>
   <meta name="twitter:site" content="@msarmi9" />
   <meta name="twitter:creator" content="https://twitter.com/msarmi9" />
   
 
-  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="/favicon.ico" />
 
 
   
@@ -35,10 +35,10 @@
   
   
     
-    <link type="text/css" rel="stylesheet" href="/css/post.min.f73f58b6c838a10145e8ccf7fc4325dbe662bc0d2ef228843913411d410deee3.css" integrity="sha256-9z9Ytsg4oQFF6Mz3/EMl2&#43;ZivA0u8iiEORNBHUEN7uM="/>
+    <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.0c3cb8f6759511d5f2095626bf6acb6ae0059537a9fae0097a52e79560dd787f.css" integrity="sha256-DDy49nWVEdXyCVYmv2rLauAFlTep&#43;uAJelLnlWDdeH8="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.ea6dfbc19ae2c893ec471cdb5796d65ba9d5c9450a29147cac06ed60632eeb92.css" integrity="sha256-6m37wZriyJPsRxzbV5bWW6nVyUUKKRR8rAbtYGMu65I="/>
   
   
    
@@ -51,7 +51,7 @@
       "@context": "http://schema.org", 
       "@type": "WebSite", 
       "url": "https:\/\/msarmi9.github.io\/posts\/async-rust\/",
-      "name": "Async Rust: Futures, Tasks, Wakers; Oh My!",
+      "name": "Async Rust: Futures, Tasks, Wakers—Oh My!",
       "author": {
         "@type": "Person",
         "name": ""
@@ -112,7 +112,7 @@ if (!doNotTrack) {
       <div class="post__container">
         <div class="post">
           <header class="post__header">
-            <h1 id="post__title">Async Rust: Futures, Tasks, Wakers; Oh My!</h1>
+            <h1 id="post__title">Async Rust: Futures, Tasks, Wakers—Oh My!</h1>
             <time datetime="2021-02-05 16:03:23 -0800 PST" class="post__date">Feb 5 2021</time> 
           </header>
           <article class="post__content">
@@ -120,8 +120,7 @@ if (!doNotTrack) {
 <p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=9b5bd9d535e09e4b224173ce5090445f" 
   
    target="_blank" rel="noreferrer noopener" 
-><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="rust-playground"></a>
-</p>
+><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="badge"></a></p>
 <p>Async is all the rage. Python, Rust, Go. Pick your language and chances are it&rsquo;s got some form of <code>async / await</code> going. If you&rsquo;ve never worked with <code>async / await</code> before this can all be somewhat confusing, to put it mildly. In this post we&rsquo;ll take a high level overview of asynchronous programming in general before making our way to Rust, where we&rsquo;ll look at the current state of async&mdash;what it is, how to do it, and how it all works.</p>
 <h2 id="what-is-asynchronous-programming-and-why-should-we-care">What Is Asynchronous Programming and Why Should We Care<a class="anchor" href="#what-is-asynchronous-programming-and-why-should-we-care">#</a></h2>
 <p>Most programs are synchronous. They execute line by line in the order they&rsquo;re written. Whenever we encounter an operation that can&rsquo;t be completed immediately, we must wait until it finishes before we can proceed. Establishing a TCP connection, for example, requires several exchanges over a network, which can take some time, during which our program is unable to work on anything else. In other words, synchronous operations <em>block</em> the thread on which our program executes.</p>
@@ -133,8 +132,7 @@ if (!doNotTrack) {
 <p>Rust enables asynchronous programming via two keywords: <code>async</code> &amp; <code>.await</code>. Functions marked as <code>async fn</code> are transformed at compile time into operations that can run asynchronously. Async functions are called just like any other function, except instead of executing when called, an async function returns a value representing the computation. This value is called a <code>Future</code>. In Rust a future is anything that implements the <a href="https://doc.Rust-lang.org/std/future/trait.Future.html" 
   
    target="_blank" rel="noreferrer noopener" 
->std::future::Future</a>
- trait provided by the standard library. Every <code>async fn</code> implicitly returns a <code>Future</code>. For example, the async function</p>
+>std::future::Future</a> trait provided by the standard library. Every <code>async fn</code> implicitly returns a <code>Future</code>. For example, the async function</p>
 <pre><code class="language-Rust">async fn hello() -&gt; String {
     &quot;hi, there!&quot;.to_string()
 }
@@ -149,35 +147,28 @@ if (!doNotTrack) {
 <p>The inner <a href="https://doc.Rust-lang.org/reference/expressions/block-expr.html#async-blocks" 
   
    target="_blank" rel="noreferrer noopener" 
->async block</a>
- is a variant of Rust&rsquo;s ordinary block expressions which evaluates to an anonymous future type, similar to how closures return anonymous types implementing one of the <code>std::ops::Fn</code> traits.</p>
+>async block</a> is a variant of Rust&rsquo;s ordinary block expressions which evaluates to an anonymous future type, similar to how closures return anonymous types implementing one of the <code>std::ops::Fn</code> traits.</p>
 <p>Futures lie at the heart of async in Rust but are not the whole story. A key distinction between Rust and other languages like JS is that in Rust async operations are <em>lazy</em>. By themselves futures do nothing. They require a <a href="https://stackoverflow.com/a/3900574" 
   
    target="_blank" rel="noreferrer noopener" 
->runtime</a>
-, which provides, among other things, a task scheduler and an I/O driver backed by the operating system&rsquo;s own event queue (epoll, kqueue, etc.). A very widely used runtime in Rust is provided by the <a href="https://docs.rs/tokio/1.0.2/tokio/runtime/index.html" 
+>runtime</a>, which provides, among other things, a task scheduler and an I/O driver backed by the operating system&rsquo;s own event queue (epoll, kqueue, etc.). A very widely used runtime in Rust is provided by the <a href="https://docs.rs/tokio/1.0.2/tokio/runtime/index.html" 
   
    target="_blank" rel="noreferrer noopener" 
->tokio</a>
- crate. Another is provided by <a href="https://docs.rs/async-std/1.9.0/async_std/" 
+>tokio</a> crate. Another is provided by <a href="https://docs.rs/async-std/1.9.0/async_std/" 
   
    target="_blank" rel="noreferrer noopener" 
->async-std</a>
-. All asynchronous behaviour in Rust occurs within the context of a runtime.</p>
+>async-std</a>. All asynchronous behaviour in Rust occurs within the context of a runtime.</p>
 <p>Now, you might be wondering why Rust doesn&rsquo;t just ship with a built-in runtime. The reason is Rust&rsquo;s commitment to <a href="https://aturon.github.io/blog/2016/08/11/futures/" 
   
    target="_blank" rel="noreferrer noopener" 
->zero-cost abstractions</a>
-. Any runtime imposes a performance overhead that all programs must pay regardless of whether they require it. Rust chooses to instead only define asynchronous behaviour via standard library traits like <code>Future</code>, leaving the implementation to the larger Rust ecosystem.</p>
+>zero-cost abstractions</a>. Any runtime imposes a performance overhead that all programs must pay regardless of whether they require it. Rust chooses to instead only define asynchronous behaviour via standard library traits like <code>Future</code>, leaving the implementation to the larger Rust ecosystem.</p>
 <p>⚠️ <strong>Note:</strong> An unfortunate side effect of this decision is that it forces crates to depend on a specific choice of runtime. For instance, <a href="https://docs.rs/reqwest/0.11.0/reqwest/" 
   
    target="_blank" rel="noreferrer noopener" 
->reqwest</a>
- requires <code>tokio</code> while <a href="https://docs.rs/surf/2.1.0/surf/" 
+>reqwest</a> requires <code>tokio</code> while <a href="https://docs.rs/surf/2.1.0/surf/" 
   
    target="_blank" rel="noreferrer noopener" 
->surf</a>
- requires <code>async_std</code>. This can be a big source of confusion for newcomers just looking to get the hang of async in Rust (i.e. me).</p>
+>surf</a> requires <code>async_std</code>. This can be a big source of confusion for newcomers just looking to get the hang of async in Rust (i.e. me).</p>
 <h2 id="tasks">Tasks<a class="anchor" href="#tasks">#</a></h2>
 <p>The runtime doesn&rsquo;t interface with individual futures directly but instead groups them into <em>tasks</em>. A task is a lightweight, non-blocking unit of execution, similar to an OS thread, except instead of being managed by the OS scheduler, tasks are managed by the runtime. This pattern generally goes by the name <em>green threads</em>, after the java library that originally implemented them. Because tasks are cheap to create and run, a single OS thread can handle many tasks, enabling a program to run concurrently on a single thread (although a typical async program will likely have many, many tasks scheduled across multiple threads).</p>
 <p>A key attribute of tasks is that they exhibit what is known as <em>cooperative multitasking</em>. A task is allowed to run until it <em>yields</em>, signaling to the runtime that it cannot currently progress any further. This allows the runtime to switch to another task that can progress. Tasks yield via calls to <code>.await</code>. Any invocation of <code>.await</code> within an async function or block yields control back to the runtime, which is then free to swap the current task for a different one.</p>
@@ -258,17 +249,14 @@ Finished in 4000 ms
 <p><a href="https://play.Rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=c66dcd1e3c10f3dd86c50a0f486e4dae" 
   
    target="_blank" rel="noreferrer noopener" 
-><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="rust-playground"></a>
-</p>
+><img src="https://img.shields.io/badge/Rust-Playground-critical" alt="badge"></a></p>
 <p>So far we&rsquo;ve taken a look at tasks, futures, and the runtime. We know that tasks are made up of futures and are submitted to the runtime for execution, and that each call to <code>.await</code> causes the current task to yield to the runtime, allowing the runtime to switch to another task. But how does the runtime know when to return to the original task? To answer this question, we need to take a closer look at the <a href="https://doc.Rust-lang.org/std/future/trait.Future.html" 
   
    target="_blank" rel="noreferrer noopener" 
->Future</a>
- trait. This section is adapted from the superb <em>Async In Depth</em> chapter from the <a href="https://tokio.rs/tokio/tutorial/async" 
+>Future</a> trait. This section is adapted from the superb <em>Async In Depth</em> chapter from the <a href="https://tokio.rs/tokio/tutorial/async" 
   
    target="_blank" rel="noreferrer noopener" 
->tokio tutorial</a>
-.</p>
+>tokio tutorial</a>.</p>
 <pre><code class="language-Rust">pub trait Future {
     type Output;
     fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Self::Output&gt;;
@@ -380,7 +368,7 @@ Finished in 500 ms
 <ul class="tags__list">
     
     <li class="tag__item">
-        <a class="tag__link" href="https://msarmi9.github.io/tags/rust/">rust</a>
+        <a class="tag__link" href="https://msarmi9.github.io/tags/programming/">programming</a>
     </li></ul>
 
  <div class="pagination">
@@ -403,27 +391,39 @@ Finished in 500 ms
   
      
     
-      <a class="social-icons__link" rel="me" title="Twitter"
-         href="https://twitter.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Twitter"
+        href="https://twitter.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/twitter.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="GitHub"
-         href="https://github.com/msarmi9"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="GitHub"
+        href="https://github.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/github.svg')"></div>
       </a>
     
   
      
     
-      <a class="social-icons__link" rel="me" title="Email"
-         href="mailto:matthewcs@me.com"
-         target="_blank" rel="noopener">
+      <a
+        class="social-icons__link"
+        title="Email"
+        href="mailto:matthewcs@me.com"
+        target="_blank"
+        rel="me noopener"
+      >
         <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/email.svg')"></div>
       </a>
     
@@ -443,7 +443,7 @@ Finished in 500 ms
    
 
   
-  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  <script src="/js/index.min.575dda8d49ee02639942c63564273e6da972ab531dda26a08800bdcb477cbd7f.js" integrity="sha256-V13ajUnuAmOZQsY1ZCc&#43;balyq1Md2iagiAC9y0d8vX8=" crossorigin="anonymous"></script>
   
   
   <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
