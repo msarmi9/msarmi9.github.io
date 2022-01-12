@@ -52,10 +52,22 @@ Why? One of my favourite things about Docker is that it allows you to easily rep
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://msarmi9.github.io/books/</guid>
-      <description>Books 📚 Python Architecture Patterns with Python Fluent Python, 2nd Edition High Performance Python, 2nd Edition
-Rust Programming Rust, 2nd Edition Refactoring to Rust Rust In Action The Rust Programming Language, 2018 Edition
-Swift Advanced Swift Swift In Depth
-Deep Learning Deep Learning for Coders with fastai &amp;amp; PyTorch Deep Learning for Vision Systems Deep Learning Patterns and Practices GANs In Action Generative Deep Learning Inside Deep Learning Transfer Learning for NLP</description>
+      <description>Books 📚 Python Architecture Patterns with Python
+Fluent Python, 2nd Edition
+High Performance Python, 2nd Edition
+Rust Programming Rust, 2nd Edition
+Refactoring to Rust
+Rust In Action
+The Rust Programming Language, 2018 Edition
+Swift Advanced Swift
+Swift In Depth
+Deep Learning Deep Learning for Coders with fastai &amp;amp; PyTorch
+Deep Learning for Vision Systems
+Deep Learning Patterns and Practices
+GANs In Action
+Generative Deep Learning
+Inside Deep Learning
+Transfer Learning for NLP</description>
     </item>
     
   </channel>
