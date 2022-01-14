@@ -38,7 +38,7 @@
     <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.ea6dfbc19ae2c893ec471cdb5796d65ba9d5c9450a29147cac06ed60632eeb92.css" integrity="sha256-6m37wZriyJPsRxzbV5bWW6nVyUUKKRR8rAbtYGMu65I="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.07bdf4f23f9794aa1bb3e61e9bc5e441e83e1a6e8f22bd2bce422e847eba5a09.css" integrity="sha256-B7308j&#43;XlKobs&#43;Yem8XkQeg&#43;Gm6PIr0rzkIuhH66Wgk="/>
   
   
    
@@ -280,8 +280,9 @@ if (!doNotTrack) {
         return weights @ h                   # (B, L, T) x (B, T, D) -&gt; (B, L, D)
 </code></pre>
 <h2 id="all-together-now-query-key-value">All Together Now: Query, Key, Value<a class="anchor" href="#all-together-now-query-key-value">#</a></h2>
-<p>The table below summarizes each of the attention scoring functions we&rsquo;ve covered today.</p>
-<p>$\;$ </p>
+<p>The table below summarizes each of the attention scoring functions we&rsquo;ve covered today.<br>
+$\,$</p>
+<!-- raw HTML omitted -->
 <table>
 <thead>
 <tr>
@@ -325,6 +326,7 @@ if (!doNotTrack) {
 </tr>
 </tbody>
 </table>
+<!-- raw HTML omitted -->
 <p>We&rsquo;ve learned that attention alleviates the information bottleneck of the original seq2seq framing by allowing us to look at the entire input sequence during the decoding process, and that it encodes a prior belief that the importance of each input is relative to what we are trying to predict. However, one thing we could improve on is the scoring mechanism. Currently, the attention score for each encoder state is independent of all other encoder states. Just as it helped to look at the entire input sequence when decoding, wouldn&rsquo;t it help us understand the importance of each input if we could look at the rest of the inputs alongside it?</p>
 <p>That is a story for another day, but before we go we&rsquo;ll give a brief preview. The entire process of attention can be captured in a single picture.</p>
 <p><img src="/images/attention/qkv.tiff" alt="qkv"></p>
