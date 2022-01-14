@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© 2021</copyright>
-    <lastBuildDate>Mon, 03 Aug 2020 16:03:23 -0800</lastBuildDate><atom:link href="https://msarmi9.github.io/tags/deep-learning/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Dec 2021 16:03:23 -0800</lastBuildDate><atom:link href="https://msarmi9.github.io/tags/deep-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Making Sense of Attention</title>
+      <link>https://msarmi9.github.io/posts/attention/</link>
+      <pubDate>Tue, 21 Dec 2021 16:03:23 -0800</pubDate>
+      
+      <guid>https://msarmi9.github.io/posts/attention/</guid>
+      <description>When it comes to deep learning, few ideas have brought about such a radical shift in thinking as attention. Attention changed everything. Like other landmark ideas before it, attention draws merit from simplicity. If that reads like a typo to you, you&amp;rsquo;re not alone. In this post we&amp;rsquo;ll motivate attention as a natural way of looking at sequences and dig into three of the most common attention mechanisms you&amp;rsquo;ll encounter in the wild.</description>
+    </item>
+    
     <item>
       <title>Neural Nets Aren&#39;t Black Boxes</title>
       <link>https://msarmi9.github.io/posts/neural-nets-are-not-black-boxes/</link>

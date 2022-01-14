@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Making Sense of Attention | Matt&#39;s blog</title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="Motivating attention in the context of seq2seq: what is is, how it&#39;s done, and why it works.">
+  <meta name="keywords" content="attention , seq2seq , deep learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Making Sense of Attention" />
+  <meta name="twitter:description" content="Motivating attention in the context of seq2seq: what is is, how it&amp;#39;s done, and why it works."/>
+  <meta name="twitter:site" content="@msarmi9" />
+  <meta name="twitter:creator" content="https://twitter.com/msarmi9" />
+  
+
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
+  
+    
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.ea6dfbc19ae2c893ec471cdb5796d65ba9d5c9450a29147cac06ed60632eeb92.css" integrity="sha256-6m37wZriyJPsRxzbV5bWW6nVyUUKKRR8rAbtYGMu65I="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    { 
+      "@context": "http://schema.org", 
+      "@type": "WebSite", 
+      "url": "https:\/\/msarmi9.github.io\/posts\/attention\/",
+      "name": "Making Sense of Attention",
+      "author": {
+        "@type": "Person",
+        "name": ""
+      },
+      "description": "Motivating attention in the context of seq2seq: what is is, how it\u0026#39;s done, and why it works."
+    }
+  
+  </script>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-170177346-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+</head>
+
+<body>
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+
+  <nav class="nav" id="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/posts">posts</a>
+      </li>
+    
+      <li>
+        <a  href="/books">books</a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  <main>
+    
+    
+
+    <div class="flex-wrapper">
+      <div class="post__container">
+        <div class="post">
+          <header class="post__header">
+            <h1 id="post__title">Making Sense of Attention</h1>
+            <time datetime="2021-12-21 16:03:23 -0800 PST" class="post__date">Dec 21 2021</time> 
+          </header>
+          <article class="post__content">
+              
+<p>When it comes to deep learning, few ideas have brought about such a radical shift in thinking as attention. Attention changed everything. Like other landmark ideas before it, attention draws merit from simplicity. If that reads like a typo to you, you&rsquo;re not alone. In this post we&rsquo;ll motivate attention as a natural way of looking at sequences and dig into three of the most common attention mechanisms you&rsquo;ll encounter in the wild.</p>
+<h2 id="seq2seq">Seq2seq<a class="anchor" href="#seq2seq">#</a></h2>
+<p>Seq2seq makes use of two networks to transform one sequence into another. By decoupling the input and output into two separate stages, seq2seq allows the ordering and length of the two sequences to differ, something an ordinary recurrent network cannot do. The first network, the encoder, represents the input sequence as a sequence of hidden states. The second network, the decoder, uses the final hidden state to generate an output sequence. Attention was born out of an inherent limitation of the original seq2seq framing: a single vector is responsible for representing the entire input sequence.</p>
+<p><img src="/images/attention/seq2seq.tiff" alt="seq2seq"></p>
+<p>This bottleneck prevents the decoder from accessing (or more provacatively, querying) the full input sequence during the decoding process. After the final encoder state is passed to the decoder we no longer have access to the input sequence and must rely solely on memory. Not only does this make things more difficult, it&rsquo;s tremendously wasteful, as we ignore all but the final encoder state.</p>
+<p>The key insight of attention is that it would make life much easier if instead we could look at the entire input sequence while decoding. The question of how exactly we do that is where the fun starts. The sequence of hidden states produced by the encoder is a learned representation of the input sequence. How can we utilize this sequence fully when decoding? One option is to pass the decoder the concatenation of the entire sequence, however, this quickly leads to a proliferation in the number of decoder parameters. The second option is to pass the decoder a weighted sum of encoder states and that&rsquo;s exactly what attention does.</p>
+<h2 id="seq2seq--attention">Seq2seq + Attention<a class="anchor" href="#seq2seq--attention">#</a></h2>
+<p>The basic setup of attention consists of four steps.</p>
+<p><img src="/images/attention/attention.tiff" alt="attention"></p>
+<p>At each step of the decoding process, we</p>
+<ol>
+<li>Assign a weight to each encoder state $h$ of the input sequence: the <strong>attention score</strong>. This score depends only on $h$ and the current decoder state $s$.</li>
+<li>Normalize the attention scores to form a probability distribution.</li>
+<li>Sum the encoder states weighted by the attention scores to get a single vector: the <strong>context</strong> $\bar{h}$ .</li>
+<li>Make a prediction using the context $\bar{h}$ and current decoder state $s$, typically by adding or concatenating the two and passing the result through a shallow fully connected network.</li>
+</ol>
+<p>Technically, there is no requirement to turn the attention scores into a probability distribution before computing the context, however, there are at least two reasons we should. First, it aids interpretability and makes it easy to see which inputs are relevant to the current output. Second, it ensures the expected value of the context vector is the same regardless of the length of the input sequence (in fact, the context has the same expected value as the individual encoder states). This matters since the context is passed through linear layers, which are sensitive to the magnitudes of their input on both the forward and backward pass (larger inputs produce larger gradients).</p>
+<p>All that&rsquo;s left to decide is how we&rsquo;ll compute the attention scores for each input $x$. At each decoding step we need to predict an element $y$ of the output sequence, represented by a decoder state $s$. Since we want to weight each input based on its relevance to $y$, it only makes sense to look at which encoder states $h$ are close to $s$ in embedding space (or latent space, if you prefer). Mathematically speaking, there are many ways to define what &ldquo;close&rdquo; means, but none is simpler than the dot product.</p>
+<h2 id="dot-product">Dot Product<a class="anchor" href="#dot-product">#</a></h2>
+<p>The dot product of two vectors is the product of their magnitudes scaled by the cosine of the angle between them.</p>
+<p>\[
+\mathbf{u} \cdot \mathbf{v} = \Vert \mathbf{u} \Vert \Vert \mathbf{v} \Vert \cos \theta
+\]</p>
+<p>The dot product achieves its maximum when two vectors point in the same direction and its minimum when they point in opposite directions. The more similar two vectors are, the larger their dot product; the more dissimilar they are, the more negative their dot product. Two vectors that are independent of each other have a dot product of zero.</p>
+<p>These three states make attention intuitive. Imagine we&rsquo;re asked to translate the sentence <code>Helga ate an apple</code> to Italian. The first word we must predict is <code>Helga</code> (which is the same in Italian as it is in English). Now the name <code>Helga</code> might conjure many connotations (honesty and the color yellow, for example), but presumably none of them have much to do with the words <code>ate</code>, <code>an</code>, and <code>apple</code>. Were every word to have a magnitude of one, we&rsquo;d expect the dot product of <code>Helga</code> with each word to be</p>
+<p><img src="/images/attention/helga01.tiff" alt="helga-01"></p>
+<p>Applying softmax to these scores yields the final attention weights.</p>
+<p><img src="/images/attention/helga02.tiff" alt="helga-02"></p>
+<p>As we&rsquo;d expect, <code>Helga</code> is weighted the highest, but what&rsquo;s more interesting is how small the gap with the other weights is. For instance, were <code>Helga</code> to have a magnitude of two the attention scores would be</p>
+<p><img src="/images/attention/helga03.tiff" alt="helga-03"></p>
+<p>and the attention weights would be</p>
+<p><img src="/images/attention/helga04.tiff" alt="helga-04"></p>
+<p>When every vector has a magnitude of one, the dot product is the same as cosine similarity. Because cosine similarity ignores magnitudes, it effectively confines each vector to the unit sphere. Since there&rsquo;s not as much room to run around on the sphere as there is in general $d$-dimensional space, the values produced by cosine similarity have less variance, which yields a smoother softmax distribution. In this sense cosine similarity acts as a regularizer. Perhaps this is one reason to prefer the dot product, as it&rsquo;d make more sense for the final weights to be skewed more towards <code>Helga</code>.</p>
+<h2 id="scaled-dot-product">Scaled Dot Product<a class="anchor" href="#scaled-dot-product">#</a></h2>
+<p>There&rsquo;s just one problem: the dot product tends to produce larger values in higher dimensional space (where distances can be larger), which saturates the softmax function and yields smaller gradients, making training more difficult. To avoid this we need to normalize the dot product in such a way that the magnitude of its output is independent of the hidden dimension $d$. The only questions is what we should divide by.</p>
+<p>\[
+\mathrm{score}(\mathbf{u}, \mathbf{v}) = \mathbf{u} \cdot \mathbf{v} \; / \; \mathbf{?}
+\]</p>
+<p>Our first thought might be to simply divide by $d$ and that&rsquo;s a good guess, but we can do something slightly more sophisticated. Let&rsquo;s assume the components of a hidden state are independent random variables drawn from a standard normal distribution.</p>
+<p>\[
+\mathbf{u} = [u_1, \; \dots, \; u_d] \qquad u_i \sim N(0, 1)
+\]</p>
+<p>We&rsquo;ll show the dot product of two such hidden states has a mean of $0$ and a variance of $d$, hence dividing by $\sqrt{d}$ scales the variance to $1$, which leaves us free to choose the hidden dimension without affecting the magnitude of the attention scores. Were we to instead divide by $d$, the resulting variance would be $1/d$, making the attention scores more uniform the larger $d$ is (in the limit all scores converge to zero, which yields a uniform softmax distribution and completely negates the effect of attention).</p>
+<p>Working this out is a fun exercise and makes things more concrete. To start,</p>
+<p>\[
+\mathbf{u} \cdot \mathbf{v} = u_1v_1 + \cdots + u_dv_d
+\]</p>
+<p>If we can show the products $u_i v_i$ are independent and of unit variance, we&rsquo;re done, since the variance of the sum of indepedent random variables is the sum of their variances.</p>
+<p>\[
+\mathrm{Var}(u \cdot v) = \mathrm{Var}(u_1v_1) + \cdots + \mathrm{Var}(u_dv_d) = d
+\]</p>
+<p>First, independence. The $i$-th component of each hidden state represents an independent random variable $X_i$, hence the products $u_i v_i$ and $u_j v_j$ represent random variables $X_i^2$ and $X_j^2$. The only question is whether they&rsquo;re independent or not. It&rsquo;s a very nice fact that applying a &ldquo;nice&rdquo; function to a collection of independent variables preserves independence. Since the square is indeed a nice function, this fact tells us that $X_i^2$ and $X_j^2$ are also independent.</p>
+<p>Showing that the product of two independent random variables $X_i, X_j \sim N(0, 1)$ has unit variance is just a matter of applying the right identities.</p>
+<p>\begin{align}
+\mathrm{Var}(X_iX_j) &amp;= \mathrm{E}[X_i^2X_j^2] - \mathrm{E}[X_iX_j]^2 \\
+&amp;= \mathrm{E}[X_i^2X_j^2] - \mathrm{E}[X_i]^2\mathrm{E}[X_j]^2 \\
+&amp;= \mathrm{E}[X_i^2]\mathrm{E}[X_j^2] \\
+&amp;= 1
+\end{align}</p>
+<p>The first equality follows from the definition of variance, the second from the independence of $X_i, \, X_j$, and the third from the independence of $X_i^2, \, X_j^2$ and the fact that $X_i, \, X_j$ have a mean of zero. The last equality follows from the easy fact that the square of a standard normal has a mean of one.</p>
+<p>\[
+1 = \mathrm{Var}(X) = \mathrm{E}[X^2] - \mathrm{E}[X]^2 = \mathrm{E}[X^2]
+\]</p>
+<p>Neat, right? The last thing to do is to express things in code. As usual, the only thing we really need to be mindful of are the shapes. An input sequence of length $T$ yields a matrix of encoder states $h$ of shape $(T, D)$ and a matrix of decoder states $s$ of shape $(L, D)$. To take the dot product of each encoder state with $s$, we can simply multiply $s$ and $h^\intercal$ to get a matrix of scores of shape $(L, T)$. How cool is that?</p>
+<p><img src="/images/attention/dot-score.tiff" alt="dot score"></p>
+<pre><code class="language-python">class DotScore(nn.Module):
+    &quot;&quot;&quot;Scaled dot product as an attention scoring function.&quot;&quot;&quot;
+
+    def __init__(self, d: int):
+        super().__init__()
+        self.d = d
+
+    def forward(self, s: Tensor, h: Tensor) -&gt; Tensor:
+        # (B, L, D) x (B, D, T) -&gt; (B, L, T)
+        return s @ h.transpose(1, 2) / math.sqrt(self.d)
+</code></pre>
+<p>Note that were we to only have one decoder state available at a time (when using a recurrent network, for instance), we could pass a single decoder state in as a row vector of shape $(1, D)$ and get back a row vector of scores of shape $(1, T)$.</p>
+<h2 id="a-generalized-dot-product">A Generalized Dot Product<a class="anchor" href="#a-generalized-dot-product">#</a></h2>
+<p>As we mentioned earlier, there are many ways to define what it means for two vectors to be close. The dot product is the most natural way, but it is not the only one. Mathematically speaking, a notion of closeness comes from an inner product, which you can think of as nothing more than a generalized dot product. More specifically, an inner product is a bilinear map with some nice properties that takes two vectors as input and outputs a number.</p>
+<p>\[
+\langle\mathbf{u}, \mathbf{v}\rangle \; \longmapsto \; \mathbb{R}
+\]</p>
+<p>Sounds suspiciously like a way to measure distance, doesn&rsquo;t it? Choosing a basis allows an inner product to be represented as a matrix $\mathrm{W}$.</p>
+<p>\[
+\langle \mathbf{u}, \mathbf{v} \rangle = \mathbf{u} \mathrm{W} \mathbf{v}^\intercal
+\]</p>
+<p>For example, the dot product over $\mathbb{R}^2$ with the usual basis is represented by the identity matrix.</p>
+<p>\[
+\mathbf{u} \cdot \mathbf{v} = \begin{bmatrix} u_1 &amp; u_2 \end{bmatrix} \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix} \begin{bmatrix} v_1 \\ v_2 \end{bmatrix} = u_1v_1 + u_2v_2
+\]</p>
+<p>More generally, an inner product over $\mathbb{R}^2$ is represented by a matrix</p>
+<p>\[
+\mathrm{W} = \begin{bmatrix} a &amp; b \\ b &amp; d \end{bmatrix} \quad \text{where} \quad \mathbf{u} \mathrm{W} \mathbf{u}^\intercal &gt; 0 \;\; \forall \;\; \mathbf{u} \neq 0
+\]</p>
+<p>Choosing the dot product as the scoring function essentially hardcodes the values of this matrix. As machine learning enthusiasts, this feels a bit unnatural. Why not just learn the values of $a$, $b$, and $d$ instead? So-called &ldquo;general&rdquo; or &ldquo;multiplicative&rdquo; attention does just that and more: it ditches the constraints on $\mathrm{W}$ completely, allowing us to learn a general matrix</p>
+<p>\[
+\mathrm{W} = \begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}
+\]</p>
+<p>and the associated scoring function</p>
+<p>\[
+\text{score}(\mathbf{u}, \mathbf{v}) = \mathbf{u} \mathrm{W} \mathbf{v}^\intercal
+\]</p>
+<p>which may no longer be an inner product. Whereas the dot product weights each dimension equally, the above matrix can learn to weight each dimension according to its importance, allowing us to ignore insignificant parts of the latent space. Given that the latent space typically has hundreds of dimensions, we can expect some of them to be less informative than others.</p>
+<p>At this point you might be wondering why we would ever choose the dot product as our scoring function when the above form can learn any bilinear map, including the dot product. Well, much as skip connections arose from the intuition that it&rsquo;s harder to learn the identity mapping than the zero mapping, it can be difficult for the general form to converge to the dot product.</p>
+<p>Implementing the above scoring function, which we&rsquo;ll call the bilinear score, requires only a weight matrix of shape $(D, D)$.</p>
+<p><img src="/images/attention/bilinear-score.tiff" alt="bilinear score"></p>
+<pre><code class="language-python">class BilinearScore(nn.Module):
+    &quot;&quot;&quot;A generalized, trainable dot product as an attention scoring function.&quot;&quot;&quot;
+
+    def __init__(self, d: int):
+        super().__init__()
+        self.w = nn.Linear(d, d, bias=False)
+
+    def forward(self, s: Tensor, h: Tensor) -&gt; Tensor:
+        # (B, L, D) x (_, D, D) x (B, D, T) -&gt; (B, L, T)
+        return s @ self.w @ h.transpose(1, 2)
+</code></pre>
+<p>Note that we can and should divide the output of the bilinear score by $\sqrt{d}\,$ for the same reason as with the dot product, however, historically it did not include any scaling initially.</p>
+<h2 id="learning-to-score">Learning to Score<a class="anchor" href="#learning-to-score">#</a></h2>
+<p>The last of the scoring functions we&rsquo;ll cover is the simplest and most general. Just as it felt a bit unnatural to hardcode the values of the earlier $2 \times 2$ matrix, it feels a bit unnatural to force the scoring function to resemble an inner product. Why don&rsquo;t we just learn an arbitrary scoring function with a shallow fully connected network?</p>
+<p>Such a network might take as input the sum or concatenation of an encoder state $h$ and a decoder state $s.$ You&rsquo;ll often see this written as</p>
+<p>\[
+\text{score}(\mathbf{h}, \mathbf{s}) = \mathbf{v}^\intercal \tanh(\mathrm{\mathrm{W}} [\mathbf{h}; \mathbf{s}])
+\]</p>
+<p>where the semicolon denotes concatenation and $\mathbf{v}^\intercal$ denotes the second linear layer of this two layer network, confusingly denoted as the transpose of a column vector instead of simply as a $1 \times d$ matrix, which it is. You&rsquo;ll rarely see addition used in place of concatenation, I suspect because it degrades performance. That&rsquo;s a real shame because it would cut the number of parameters in half.</p>
+<p>What&rsquo;s even more confusing is that the above scoring function is most often referred to as &ldquo;additive&rdquo; attention. Yes, the name is truly awful. In fact, since it&rsquo;s the most general form a scoring function can possibly take, it&rsquo;d make sense to call it the general score. Sadly, the name is already taken. Instead, we&rsquo;ll call it the concat score. Why use $\tanh$ as the activation function? My guess is we&rsquo;d like the output of our scoring function to be centered at zero so we have an even distribution of positive and negative scores.</p>
+<p>Implementing the concat score requires a bit of yoga, as we need to concatenate each encoder state with each decoder state. We&rsquo;ll do this by repeating each decoder state $T$ times (in order) and our matrix of decoder states $L$ times. Then we&rsquo;ll concatenate the two together along the feature dimension into a matrix of shape $(L*T, 2D)$ and reshape the output into a matrix of shape $(L, T)$.</p>
+<p><img src="/images/attention/concat-score.tiff" alt="concat-score"></p>
+<pre><code class="language-python">class ConcatScore(nn.Module):
+    &quot;&quot;&quot;A two layer network as an attention scoring function.&quot;&quot;&quot;
+
+    def __init__(self, d: int):
+        super().__init__()
+        self.w = nn.Linear(2*d, d, bias=False)
+        self.v = nn.Linear(d, 1, bias=False)
+
+    def forward(self, s: Tensor, h: Tensor) -&gt; Tensor:
+        B, L, D = s.shape
+        B, T, D = h.shape
+        s = s.repeat_interleave(1, T, dim=1)          # (B, L, D) -&gt; (B, L*T, D) 
+        h = h.repeat(1, L, 1)                         # (B, T, D) -&gt; (B, L*T, D)
+        concat = torch.cat((s, h), dim=2)             # (B, L*T, 2D)
+        scores = self.v(torch.tanh(self.w(concat)))   # (B, L*T, 2D) -&gt; (B, L*T, 1)
+        return scores.view(B, L, T)                   # (B, L*T, 1) -&gt; (B, L, T)
+</code></pre>
+<h2 id="computing-the-context">Computing the Context<a class="anchor" href="#computing-the-context">#</a></h2>
+<p>Once we have the raw attention scores the last thing to do is to normalize them and take a weighted sum of hidden states to get the final context vector $\bar{h}$. This is exactly what it sounds like, with one twist: we&rsquo;ll ignore padding in the input sequence by accepting a boolean mask that tells us which indices are padded so we can set the corresponding attention weights to zero. However, since setting the weights to zero directly invalidates the probability distribution, we&rsquo;ll instead set the raw scores to a large negative number so that the resulting softmax weights are approximately zero. Since at inference time we typically do not pad inputs, our <code>mask</code> parameter will be optional.</p>
+<p><img src="/images/attention/context.tiff" alt="context"></p>
+<pre><code class="language-python">class Attention(nn.Module):
+    &quot;&quot;&quot;Container for applying an attention scoring function.&quot;&quot;&quot;
+
+    def __init__(self, score: nn.Module):
+        super().__init__()
+        self.score = score
+
+    def forward(self, s: Tensor, h: Tensor, mask: Tensor = None) -&gt; Tensor:
+        scores = self.score(s, h)            # (B, L, T)
+        if mask:
+            scores[mask] = -1e8
+        weights = F.softmax(scores, dim=1)   # (B, L, T)
+        return weights @ h                   # (B, L, T) x (B, T, D) -&gt; (B, L, D)
+</code></pre>
+<h2 id="all-together-now-query-key-value">All Together Now: Query, Key, Value<a class="anchor" href="#all-together-now-query-key-value">#</a></h2>
+<p>The table below summarizes each of the attention scoring functions we&rsquo;ve covered today.</p>
+<p>$\;$ </p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">name</th>
+<th style="text-align:left">scoring function</th>
+<th style="text-align:left">source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">dot product</td>
+<td style="text-align:left">$\mathrm{score}(\mathbf{h}, \mathbf{s}) = \mathbf{h} \cdot \mathbf{s}$</td>
+<td style="text-align:left"><a href="https://paperswithcode.com/method/dot-product-attention" 
+  
+   target="_blank" rel="noreferrer noopener" 
+>Luong, 2015</a></td>
+</tr>
+<tr>
+<td style="text-align:left">scaled dot product</td>
+<td style="text-align:left">$\mathrm{score}(\mathbf{h}, \mathbf{s}) = \mathbf{h} \cdot \mathbf{s} \;/\; \sqrt{d}$</td>
+<td style="text-align:left"><a href="https://paperswithcode.com/method/scaled" 
+  
+   target="_blank" rel="noreferrer noopener" 
+>Vaswani, 2017</a></td>
+</tr>
+<tr>
+<td style="text-align:left">bilinear (multiplicative)</td>
+<td style="text-align:left">$\mathrm{score}(\mathbf{h}, \mathbf{s}) = \mathbf{h} \mathrm{W} \mathbf{s}^\intercal$</td>
+<td style="text-align:left"><a href="https://paperswithcode.com/method/multiplicative-attention" 
+  
+   target="_blank" rel="noreferrer noopener" 
+>Luong, 2015</a></td>
+</tr>
+<tr>
+<td style="text-align:left">concat (additive)</td>
+<td style="text-align:left">$\mathrm{score}(\mathbf{h}, \mathbf{s}) = \mathbf{v}^\intercal \tanh(\mathrm{W} [\mathbf{h}; \mathbf{s}]) $</td>
+<td style="text-align:left"><a href="https://paperswithcode.com/method/additive-attention" 
+  
+   target="_blank" rel="noreferrer noopener" 
+>Bahdanau, 2015</a></td>
+</tr>
+</tbody>
+</table>
+<p>We&rsquo;ve learned that attention alleviates the information bottleneck of the original seq2seq framing by allowing us to look at the entire input sequence during the decoding process, and that it encodes a prior belief that the importance of each input is relative to what we are trying to predict. However, one thing we could improve on is the scoring mechanism. Currently, the attention score for each encoder state is independent of all other encoder states. Just as it helped to look at the entire input sequence when decoding, wouldn&rsquo;t it help us understand the importance of each input if we could look at the rest of the inputs alongside it?</p>
+<p>That is a story for another day, but before we go we&rsquo;ll give a brief preview. The entire process of attention can be captured in a single picture.</p>
+<p><img src="/images/attention/qkv.tiff" alt="qkv"></p>
+<p>This picture is of course better known by what is likely the most famous equation in all of deep learning.</p>
+<p>\[
+\mathrm{Attention}(\mathrm{Q, K, V}) = \mathrm{softmax}\left(\frac{\mathrm{Q}\mathrm{K}^\intercal}{\sqrt{d}}\right)\mathrm{V}
+\]</p>
+<p>where $\mathrm{Q}, \, \mathrm{K}, \, \mathrm{V}$ are so-called query, key, and value matrices of the right shapes. In our case, the decoder states $s$ are the queries and the encoder states $h$ are both the keys and values. Each decoder state represents a question (query): what inputs are important right now? Each encoder state represents a possible answer (key). Together, query and key assign a weight to the values we care about (the encoder states themselves).</p>
+<p>Returning to our previous question of how we might enrich the encoder&rsquo;s understanding of the importance of each input, we might ask if we could apply attention to the input sequence alone. The catch, of course, is that we only have the encoder state $s$ to work with. But this is deep learning after all and we can always learn a representation for whatever we may need.</p>
+
+
+              
+                  
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_SVG"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            showMathMenu: false, //disables context menu
+            tex2jax: {
+            inlineMath: [ ['$','$'], ['\\(','\\)'] ]
+           }
+    });
+</script>
+              
+          </article>
+          
+
+<ul class="tags__list">
+    
+    <li class="tag__item">
+        <a class="tag__link" href="https://msarmi9.github.io/tags/deep-learning/">deep-learning</a>
+    </li></ul>
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://msarmi9.github.io/posts/async-rust/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">Async Rust: Futures, Tasks, Wakers—Oh My!</span>
+    </a>
+  
+
+  
+</div>
+
+          
+          <footer class="post__footer">
+            
+
+
+<div class="social-icons">
+  
+     
+    
+      <a
+        class="social-icons__link"
+        title="Twitter"
+        href="https://twitter.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
+        <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/twitter.svg')"></div>
+      </a>
+    
+  
+     
+    
+      <a
+        class="social-icons__link"
+        title="GitHub"
+        href="https://github.com/msarmi9"
+        target="_blank"
+        rel="me noopener"
+      >
+        <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/github.svg')"></div>
+      </a>
+    
+  
+     
+    
+      <a
+        class="social-icons__link"
+        title="Email"
+        href="mailto:matthewcs@me.com"
+        target="_blank"
+        rel="me noopener"
+      >
+        <div class="social-icons__icon" style="background-image: url('https://msarmi9.github.io/svg/email.svg')"></div>
+      </a>
+    
+     
+</div>
+
+            <p>© 2021</p>
+          </footer>
+          </div>
+      </div>
+      
+    </div>
+    
+
+  </main>
+
+   
+
+  
+  <script src="/js/index.min.575dda8d49ee02639942c63564273e6da972ab531dda26a08800bdcb477cbd7f.js" integrity="sha256-V13ajUnuAmOZQsY1ZCc&#43;balyq1Md2iagiAC9y0d8vX8=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+  
+
+
+</body>
+
+</html>
