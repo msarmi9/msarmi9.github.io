@@ -38,7 +38,7 @@
     <link type="text/css" rel="stylesheet" href="/css/post.min.899c818c85b00345a747c1d45de19c0fd68f0bfcc751571d1e4aa07815f40073.css" integrity="sha256-iZyBjIWwA0WnR8HUXeGcD9aPC/zHUVcdHkqgeBX0AHM="/>
   
     
-    <link type="text/css" rel="stylesheet" href="/css/custom.min.596a4f04fae5df3397454b21617844c2a51e575071cc1e58c49ea098ac1697c5.css" integrity="sha256-WWpPBPrl3zOXRUshYXhEwqUeV1BxzB5YxJ6gmKwWl8U="/>
+    <link type="text/css" rel="stylesheet" href="/css/custom.min.814788229732d7f202d09dc94871a6346493f80ed27d409d691b5c7b16e59cb8.css" integrity="sha256-gUeIIpcy1/IC0J3JSHGmNGST&#43;A7SfUCdaRtcexblnLg="/>
   
   
    
@@ -459,7 +459,49 @@ optimizer = SGD(model, lr=0.1)
 trainer = Trainer(model, optimizer, train_dl, val_dl, metric=accuracy)
 trainer.train(5)
 </code></pre>
-<!-- raw HTML omitted -->
+<p>$\,$</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">epoch</th>
+<th style="text-align:center">train loss</th>
+<th style="text-align:center">val loss</th>
+<th style="text-align:center">accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0.620</td>
+<td style="text-align:center">0.547</td>
+<td style="text-align:center">0.904</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0.503</td>
+<td style="text-align:center">0.428</td>
+<td style="text-align:center">0.930</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">0.398</td>
+<td style="text-align:center">0.329</td>
+<td style="text-align:center">0.939</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">0.314</td>
+<td style="text-align:center">0.261</td>
+<td style="text-align:center">0.939</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">0.256</td>
+<td style="text-align:center">0.217</td>
+<td style="text-align:center">0.956</td>
+</tr>
+</tbody>
+</table>
 <p>We&rsquo;re not seeing a clear win with a deeper model, which isn&rsquo;t all that surprising. For whatever reason, neural nets do not excel at tabular data.</p>
 <h2 id="conclusion">Conclusion<a class="anchor" href="#conclusion">#</a></h2>
 <p>That&rsquo;s about it for us. In this post we were able to build and understand each piece of a feedforward neural net, starting from a single layer logistic network and ending with a multi-layer network. We saw that one reason cross entropy is an effective loss function is that the gradient with respect to the weights depends linearly on the prediction error, which promotes smoother training, and we saw that because the original inputs appear as factors in the network&rsquo;s gradients, it&rsquo;s essential to always normalize your data before training.</p>
@@ -551,7 +593,7 @@ trainer.train(5)
      
 </div>
 
-            <p>© 2021</p>
+            <p>© 2022</p>
           </footer>
           </div>
       </div>
