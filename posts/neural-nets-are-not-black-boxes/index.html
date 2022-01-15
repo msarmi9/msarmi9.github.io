@@ -135,25 +135,25 @@ if (!doNotTrack) {
 <h2 id="backpropagation">Backpropagation<a class="anchor" href="#backpropagation">#</a></h2>
 <p>Back-propagation is nothing more than the chain rule. We can view our logistic network as the composition of three functions</p>
 <p>\[
-x \to \text{BCE} \circ \text{Sigmoid} \circ \text{Linear}(x)
+x \to \mathrm{BCE} \circ \mathrm{Sigmoid} \circ \mathrm{Linear}(x)
 \]</p>
 <p>While the loss function is not usually viewed as a layer of the network, treating it as the final layer makes computing the gradients easier. Let&rsquo;s denote the output of the $i$-th layer by $x_i$ so that</p>
 <p>\begin{aligned}
-x_1 &amp;= \text{Linear}(x)     \cr
-x_2 &amp;= \text{Sigmoid}(x_1)  \cr
-x_3 &amp;= \text{BCE}(x_2)
+x_1 &amp;= \mathrm{Linear}(x)     \cr
+x_2 &amp;= \mathrm{Sigmoid}(x_1)  \cr
+x_3 &amp;= \mathrm{BCE}(x_2)
 \end{aligned}</p>
 <p>The first gradient we have to compute is the gradient with respect to the activations $x_2$.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x_2} = \frac{\partial \text{BCE}}{\partial x_2}(x_2)
+\frac{\partial \mathrm{BCE}}{\partial x_2} = \frac{\partial \mathrm{BCE}}{\partial x_2}(x_2)
 \]</p>
 <p>Next we&rsquo;ll need to compute the gradient with respect to the linear outputs $x_1$. The chain rule tells us</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x_1} = \frac{\partial \text{BCE}}{\partial x_2} \times \frac{\partial \text{Sigmoid}}{\partial x_1}(x_1)
+\frac{\partial \mathrm{BCE}}{\partial x_1} = \frac{\partial \mathrm{BCE}}{\partial x_2} \times \frac{\partial \mathrm{Sigmoid}}{\partial x_1}(x_1)
 \]</p>
 <p>In fact, we only need these two gradients to update our single layer logistic network. However, were there another layer, we&rsquo;d also need to compute the gradient with respect to $x$ (which would be the previous layer&rsquo;s activations). Since that&rsquo;s where we&rsquo;re heading anyways, let&rsquo;s go ahead and do it now.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x} = \frac{\partial \text{BCE}}{\partial x_1} \times \frac{\partial \text{Linear}}{\partial x}(x)
+\frac{\partial \mathrm{BCE}}{\partial x} = \frac{\partial \mathrm{BCE}}{\partial x_1} \times \frac{\partial \mathrm{Linear}}{\partial x}(x)
 \]</p>
 <p>Notice a pattern? The first gradient we computed&mdash;the gradient with respect to the network&rsquo;s final activations&mdash;is used to compute the next gradient&mdash;the gradient with respect to the linear outputs&mdash;which is in turn used to compute the gradient with respect to the linear inputs. To compute the gradients of any network, we simply start at the last layer and successively pass the gradients backwards to the preceding layer until we arrive at the original inputs. That&rsquo;s the reason it&rsquo;s called back-propagation. It really is helpful to picture passing the gradients back through the network like a baton.</p>
 <p>We&rsquo;ll compute each of these gradients in turn, starting with the last layer and working our way backwards to the original inputs.</p>
@@ -161,11 +161,11 @@ x_3 &amp;= \text{BCE}(x_2)
 <h2 id="binary-cross-entropy">Binary Cross Entropy<a class="anchor" href="#binary-cross-entropy">#</a></h2>
 <p>Binary cross entropy penalizes predictions by the logarithm of their confidence. Given labels $y$ which are either zero or one and probabilities $\hat{y}$ for the positive class, binary cross entropy is computed as</p>
 <p>\[
-\text{BCE}(\hat{y}, y) = -[y \ln(\hat{y}) + (1 - y)\ln(1 - \hat{y})]
+\mathrm{BCE}(\hat{y}, y) = -[y \ln(\hat{y}) + (1 - y)\ln(1 - \hat{y})]
 \]</p>
 <p>After simplifying, you&rsquo;ll find its derivative is</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial \hat{y}} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})}
+\frac{\partial \mathrm{BCE}}{\partial \hat{y}} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})}
 \]</p>
 <p>To avoid division-by-zero errors, we&rsquo;ll clip the probabilities so that they&rsquo;re not too close to zero or one.</p>
 <pre><code class="language-python">class BinaryCrossEntropy:
@@ -186,23 +186,23 @@ x_3 &amp;= \text{BCE}(x_2)
 <h2 id="activations">Activations<a class="anchor" href="#activations">#</a></h2>
 <p>The easiest components of networks to handle are the activation functions. Our activation is sigmoid, which you&rsquo;ll often see defined as one of</p>
 <p>\[
-\sigma(x) = \frac{1}{1 + \text{exp}(-x)} \quad \text{or} \quad \frac{\text{exp}(x)}{1 + \text{exp}(x)}
+\sigma(x) = \frac{1}{1 + \mathrm{exp}(-x)} \quad \text{or} \quad \frac{\mathrm{exp}(x)}{1 + \mathrm{exp}(x)}
 \]</p>
-<p>It turns out we need both versions to implement a numerically stable sigmoid. Why? Notice how when $x$ is very negative, $\text{exp}(-x)$ is very large, and when $x$ is very positive, $\text{exp}(x)$ is very large&mdash;in both cases, too large to store in memory. The easy fix is to use the former when $x &gt; 0$ and the latter when $x &lt; 0$.</p>
+<p>It turns out we need both versions to implement a numerically stable sigmoid. Why? Notice how when $x$ is very negative, $\mathrm{exp}(-x)$ is very large, and when $x$ is very positive, $\mathrm{exp}(x)$ is very large&mdash;in both cases, too large to store in memory. The easy fix is to use the former when $x &gt; 0$ and the latter when $x &lt; 0$.</p>
 <p>After simplifying, you&rsquo;ll find the derivative of sigmoid is</p>
 <p>\[
 \sigma'(x) = \sigma(x)(1 - \sigma(x))
 \]</p>
 <p>Notice something interesting? Since we denoted $\hat{y}$ as the output of sigmoid, this is exactly the denominator of the BCE gradient we just computed, meaning the two terms will cancel when multiplied, which is what the chain rule tells us will happen when we compute the gradient with respect to the outputs $x_1$ of our network&rsquo;s last (and only) linear layer.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x_1} =\frac{\partial \text{BCE}}{\partial \hat{y}} \times \frac{\partial \text{Sigmoid}}{\partial x_1}(x_1) = \hat{y} - y
+\frac{\partial \mathrm{BCE}}{\partial x_1} =\frac{\partial \mathrm{BCE}}{\partial \hat{y}} \times \frac{\partial \mathrm{Sigmoid}}{\partial x_1}(x_1) = \hat{y} - y
 \]</p>
 <p>Nice, right? This tells us that the gradient of the loss with respect to the network&rsquo;s final linear outputs is just the difference between the probabilities $\hat{y}$ and the labels $y$. The further apart they are (i.e. the worse our predictions are), the larger the gradient and the larger the update to the weights in the SGD step.</p>
 <p>This is terrific because it means the weights of our network will change gradually as we train and won&rsquo;t spike or drop suddenly, which would be the case if the gradients were a quadratic or higher-order function of the prediction error. It also demonstrates nicely how a network adjusts its weights based on the error of its predictions.</p>
 <p>⚠️  <strong>Remember:</strong> Thanks to the chain rule, the above gradient appears as a factor in the gradients for all of the weights of our network, meaning they all depend linearly on the prediction error, which helps promote smoother training.</p>
 <p>In fact, the same is true of multi-classification, where instead of sigmoid we use softmax (or log softmax) as the final activation and cross entropy as the loss. In this case, the gradient with respect to the last linear layer&rsquo;s outputs $x$ is</p>
 <p>\[
-\frac{\partial \text{CE}}{\partial x} = \frac{\partial \text{CE}}{\partial \hat{y}} \times \frac{\partial \text{Softmax}}{\partial x}(x) = \hat{y} - y
+\frac{\partial \mathrm{CE}}{\partial x} = \frac{\partial \mathrm{CE}}{\partial \hat{y}} \times \frac{\partial \mathrm{Softmax}}{\partial x}(x) = \hat{y} - y
 \]</p>
 <p>We might cover the multi-class case in more depth in a follow-up post, although it&rsquo;s more or less the same as what we&rsquo;ve done so far.</p>
 <pre><code class="language-python">class Sigmoid:
@@ -225,40 +225,40 @@ x_3 &amp;= \text{BCE}(x_2)
 <p>\[
 z = xw + b
 \]</p>
-<p>If $x$ is a mini-batch of shape $(bs, n_\text{inp})$, then $w$ has shape $(n_\text{inp}, n_\text{out})$ and $b$ has shape $(n_\text{out},)$, with addition being done via broadcasting. In our case $n_\text{out}=1$, since we&rsquo;re just doing binary logistic regression, but we&rsquo;ll leave things as is to treat the general case. To make things easier, for the moment let&rsquo;s just imagine we have a batch size of one so that</p>
+<p>If $x$ is a mini-batch of shape $(bs, n_\mathrm{inp})$, then $w$ has shape $(n_\mathrm{inp}, n_\mathrm{out})$ and $b$ has shape $(n_\mathrm{out},)$, with addition being done via broadcasting. In our case $n_\mathrm{out}=1$, since we&rsquo;re just doing binary logistic regression, but we&rsquo;ll leave things as is to treat the general case. To make things easier, for the moment let&rsquo;s just imagine we have a batch size of one so that</p>
 <p>\[
-x = [x_1, \space \dots, \space x_{n_\text{inp}}] \quad \text{and} \quad z = [z_1, \space \dots, \space z_{n_\text{out}}]
+x = [x_1, \space \dots, \space x_{n_\mathrm{inp}}] \quad \text{and} \quad z = [z_1, \space \dots, \space z_{n_\mathrm{out}}]
 \]</p>
 <p>There are two gradients to compute this time, one with respect to the weights and another with respect to the bias. To make life easier, let&rsquo;s write everything out in coordinates.</p>
 <p>\[
-z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
+z_i = \sum_{k=1}^{n_\mathrm{inp}} \space x_k w_{ki} + b_i
 \]</p>
 <p>Taking the derivative with respect to the bias, we have</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial b_i} = \frac{\partial \text{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial b_i} = \frac{\partial \text{BCE}}{\partial z_i}
+\frac{\partial \mathrm{BCE}}{\partial b_i} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial b_i} = \frac{\partial \mathrm{BCE}}{\partial z_i}
 \]</p>
-<p>This is great because we&rsquo;ll already have the gradient with respect to the linear outputs $z$ stored in a variable $\text{grad}$ from the previous back-prop step, so we get the gradient with respect to the bias for free. That just leaves the weights.</p>
+<p>This is great because we&rsquo;ll already have the gradient with respect to the linear outputs $z$ stored in a variable $\mathrm{grad}$ from the previous back-prop step, so we get the gradient with respect to the bias for free. That just leaves the weights.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial w_{ki}} = \frac{\partial \text{BCE}}{\partial z_i} \times \frac{\partial z_i}
-{\partial w_{ki}} = \frac{\partial \text{BCE}}{\partial z_i} \times x_k
+\frac{\partial \mathrm{BCE}}{\partial w_{ki}} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}
+{\partial w_{ki}} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times x_k
 \]</p>
 <p>Taking a closer look at these gradients, we see exactly why neural nets are so sensitive to the scale of their inputs. Because the gradients with respect to the weights $w$ are multiplied by the input features $x_k$, having features of different magnitudes will result in some gradients being larger than others. These larger gradients will dominate the learning process and prevent the network from learning from all features equally. This is why it&rsquo;s important to always normalize your data before training.</p>
 <p>The last thing we have to do is to figure out how to write the above equations as a matrix product. Whenever I have to do something like this, I just focus on getting the shapes right.</p>
 <p>\begin{aligned}
-&amp;\bullet \space x \text{ has shape } (bs, n_\text{inp}) \cr
-&amp;\bullet \space \text{grad has shape } (bs, n_\text{out}) \cr
-&amp;\bullet \space \text{grad}<em>w \text{ has shape } (n</em>\text{inp}, n_\text{out})
+&amp;\bullet \space x \text{ has shape } (bs, n_\mathrm{inp}) \cr
+&amp;\bullet \space \text{grad has shape } (bs, n_\mathrm{out}) \cr
+&amp;\bullet \space \mathrm{grad_w} \text{ has shape } (n_\mathrm{inp}, n_\mathrm{out})
 \end{aligned}</p>
-<p>The only way we can multiply $x$ and $\text{grad}$ and get something of shape $(n_\text{inp}, n_\text{out})$ is to re-shape $x$ to have shape $(bs, n_\text{inp}, 1)$ and $\text{grad}$ to have shape $(bs, 1, n_\text{out})$ so that ordinary matrix multiplication over the last two dimensions gives the shape $(bs, n_\text{inp}, n_\text{out})$. Then we&rsquo;ll average the gradients over the batch dimension to get a single update to the weights.</p>
+<p>The only way we can multiply $x$ and $\mathrm{grad}$ and get something of shape $(n_\mathrm{inp}, n_\mathrm{out})$ is to re-shape $x$ to have shape $(bs, n_\mathrm{inp}, 1)$ and $\mathrm{grad}$ to have shape $(bs, 1, n_\mathrm{out})$ so that ordinary matrix multiplication over the last two dimensions gives the shape $(bs, n_\mathrm{inp}, n_\mathrm{out})$. Then we&rsquo;ll average the gradients over the batch dimension to get a single update to the weights.</p>
 <p>As we mentioned earlier, were there another linear layer we&rsquo;d also need to compute the gradient with respect to the inputs $x$ so we could keep back-propagating the gradients. This isn&rsquo;t any more difficult than what we&rsquo;ve done so far and doing so will allow us to build a network with any number of layers, so let&rsquo;s go ahead and do it. Since $x_k$ appears in each of the activations $z_i$, the gradient will respect to $x_k$ will include all of the intermediate gradients with respect to the $z_i$.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x_k} = \sum_{i=1}^{n_\text{inp}} \frac{\partial \text{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial x_k} = \sum_{i=1}^{n_\text{inp}} \frac{\partial \text{BCE}}{\partial z_i} w_{ki}
+\frac{\partial \mathrm{BCE}}{\partial x_k} = \sum_{i=1}^{n_\mathrm{inp}} \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial x_k} = \sum_{i=1}^{n_\mathrm{inp}} \frac{\partial \mathrm{BCE}}{\partial z_i} w_{ki}
 \]</p>
 <p>We can re-write this as a matrix product using the transpose of the weight matrix.</p>
 <p>\[
-\frac{\partial \text{BCE}}{\partial x_k} = \text{grad} \times w^t
+\frac{\partial \mathrm{BCE}}{\partial x_k} = \mathrm{grad} \times w^t
 \]</p>
-<p>Let&rsquo;s do a sanity check on the dimensions involved to make sure nothing has gone horribly wrong. Since $\text{grad}$ has shape $(bs, n_\text{out})$ and $w$ has shape $(n_\text{inp}, n_\text{out})$, $\text{grad} \times w^t$ has shape $(bs, n_\text{inp})$, which is exactly the shape of $x$&mdash;just as it should be.</p>
+<p>Let&rsquo;s do a sanity check on the dimensions involved to make sure nothing has gone horribly wrong. Since $\mathrm{grad}$ has shape $(bs, n_\mathrm{out})$ and $w$ has shape $(n_\mathrm{inp}, n_\mathrm{out})$, $\mathrm{grad} \times w^t$ has shape $(bs, n_\mathrm{inp})$, which is exactly the shape of $x$&mdash;just as it should be.</p>
 <pre><code class="language-python">class Linear:
     &quot;&quot;&quot;Container for the forward and backward pass of a linear layer.&quot;&quot;&quot;
 
@@ -374,7 +374,7 @@ z_i = \sum_{k=1}^{n_\text{inp}} \space x_k w_{ki} + b_i
 <p>Now let&rsquo;s grab our data and split off a validation set.</p>
 <pre><code class="language-python">X, y = load_breast_cancer(return_X_y=True)
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=9)
-X_train.shape, X_val.shape  # (455, 30), (114, 30)
+X_train.shape, X_val.shape   # (455, 30), (114, 30)
 </code></pre>
 <p>As we saw above, it&rsquo;s important to always normalize our data before training.</p>
 <pre><code class="language-python">def normalize(X_train, X_val):
@@ -423,15 +423,15 @@ sklearn_model.score(X_val, y_val)
 <pre><code>0.98245
 </code></pre>
 <h2 id="going-deeper">Going Deeper<a class="anchor" href="#going-deeper">#</a></h2>
-<p>Now let&rsquo;s see if we can&rsquo;t do a bit better using a deeper network. First, we&rsquo;ll need to implement $\text{ReLU}$ for the activations in between our linear layers. $\text{ReLU}$ acts as a gate that admits only positive inputs and maps negative inputs to zero.</p>
+<p>Now let&rsquo;s see if we can&rsquo;t do a bit better using a deeper network. First, we&rsquo;ll need to implement $\mathrm{ReLU}$ for the activations in between our linear layers. $\mathrm{ReLU}$ acts as a gate that admits only positive inputs and maps negative inputs to zero.</p>
 <p>$$
-\text{ReLU}(x) = \begin{cases} x &amp; \text{if } x &gt; 0 \cr 0 &amp; \text{otherwise} \end{cases}
+\mathrm{ReLU}(x) = \begin{cases} x &amp; \mathrm{if } x &gt; 0 \cr 0 &amp; \mathrm{otherwise} \end{cases}
 $$</p>
 <p>You might recognize its derivative as the Heaviside function, which models an electric current that&rsquo;s turned on at time $t = 0$.</p>
 <p>$$
-\text{ReLU}'(x) = \begin{cases} 1 &amp; \text{if } x &gt; 0 \cr 0 &amp; \text{otherwise} \end{cases}
+\mathrm{ReLU}'(x) = \begin{cases} 1 &amp; \text{if } x &gt; 0 \cr 0 &amp; \text{otherwise} \end{cases}
 $$</p>
-<p>During the backward pass $\text{ReLU}$ again acts as a gate that only admits gradients corresponding to positive inputs and sends all other gradients to zero.</p>
+<p>During the backward pass $\mathrm{ReLU}$ again acts as a gate that only admits gradients corresponding to positive inputs and sends all other gradients to zero.</p>
 <pre><code class="language-python">class ReLU:
     &quot;&quot;&quot;Container for the forward and backward pass of ReLU.&quot;&quot;&quot;
 
