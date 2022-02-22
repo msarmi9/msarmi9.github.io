@@ -121,14 +121,7 @@ if (!doNotTrack) {
   
    target="_blank" rel="noreferrer noopener" 
 ><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="colab"></a></p>
-<p>If you think neural nets are black boxes, you&rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process data to arrive at their predictions. In this post we&rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.</p>
-<p>This post is very much inspired by this <a href="https://sgugger.github.io/a-simple-neural-net-in-numpy.html##a-simple-neural-net-in-numpy" 
-  
-   target="_blank" rel="noreferrer noopener" 
->fantastic post</a> by Sylvain Gugger. We won&rsquo;t pretend to improve upon Sylvain&rsquo;s post; we just want to explain things in our own way to help us understand things a little better. This post is the first of a series of posts in which we&rsquo;ll build our own DNN, CNN, and RNN. You can find all of the source code at <a href="https://github.com/msarmi9/tinytorch" 
-  
-   target="_blank" rel="noreferrer noopener" 
->tinytorch</a>.</p>
+<p>If you think neural nets are black boxes, you&rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process inputs to arrive at their predictions. In this post we&rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.</p>
 <h2 id="objective">Objective<a class="anchor" href="#objective">#</a></h2>
 <p>Our goal is to construct a binary logistic classifier as a neural network. The network will consist of a single linear layer followed by a sigmoid activation with binary cross entropy as the loss. We&rsquo;ll begin by deriving the back-prop equations for our particular scenario and in doing so we&rsquo;ll see that what we&rsquo;ve done generalizes immediately to networks with arbitrary layers and activations. In other words, we&rsquo;ll have developed a framework that can model any feedforward network&mdash;all by starting from ordinary logistic regression.</p>
 <p>Actually, this isn&rsquo;t all that surprising when you think about it. Logistic regression is a linear layer followed by sigmoid and feedforward networks are just a bunch of linear layers stacked together with non-linear activations in between.</p>
@@ -143,21 +136,21 @@ x_1 &amp;= \mathrm{Linear}(x)     \cr
 x_2 &amp;= \mathrm{Sigmoid}(x_1)  \cr
 x_3 &amp;= \mathrm{BCE}(x_2)
 \end{aligned}</p>
-<p>The first gradient we have to compute is the gradient with respect to the activations $x_2$.</p>
+<p>Since the only weights in our network are those of the linear layer, the only gradient we need to compute is the gradient of the loss function with respect to the linear weights. To do so, we&rsquo;ll need to follow the chain rule and compute a series of intermediate gradients, starting with the gradient of the loss function with respect to the activations $x_2$.</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial x_2} = \frac{\partial \mathrm{BCE}}{\partial x_2}(x_2)
 \]</p>
-<p>Next we&rsquo;ll need to compute the gradient with respect to the linear outputs $x_1$. The chain rule tells us</p>
+<p>Next, we&rsquo;ll need to compute the gradient with respect to the linear outputs $x_1$. The chain rule tells us</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial x_1} = \frac{\partial \mathrm{BCE}}{\partial x_2} \times \frac{\partial \mathrm{Sigmoid}}{\partial x_1}(x_1)
 \]</p>
-<p>In fact, we only need these two gradients to update our single layer logistic network. However, were there another layer, we&rsquo;d also need to compute the gradient with respect to $x$ (which would be the previous layer&rsquo;s activations). Since that&rsquo;s where we&rsquo;re heading anyways, let&rsquo;s go ahead and do it now.</p>
+<p>We only need these two gradients to update our single layer logistic network, however, were there another layer, we&rsquo;d also need to compute the gradient with respect to $x$ (which would be the previous layer&rsquo;s activations). Since that&rsquo;s where we&rsquo;re heading anyways, let&rsquo;s go ahead and do it now.</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial x} = \frac{\partial \mathrm{BCE}}{\partial x_1} \times \frac{\partial \mathrm{Linear}}{\partial x}(x)
 \]</p>
 <p>Notice a pattern? The first gradient we computed&mdash;the gradient with respect to the network&rsquo;s final activations&mdash;is used to compute the next gradient&mdash;the gradient with respect to the linear outputs&mdash;which is in turn used to compute the gradient with respect to the linear inputs. To compute the gradients of any network, we simply start at the last layer and successively pass the gradients backwards to the preceding layer until we arrive at the original inputs. That&rsquo;s the reason it&rsquo;s called back-propagation. It really is helpful to picture passing the gradients back through the network like a baton.</p>
 <p>We&rsquo;ll compute each of these gradients in turn, starting with the last layer and working our way backwards to the original inputs.</p>
-<p>⚠️ <strong>Note:</strong> So far we&rsquo;ve been treating the input $x$ as a single variable, but most of the time $x$ will have more than one dimension. Computing the gradients in the multi-variate case isn&rsquo;t any more difficult than what we&rsquo;ve done (it involves something called the Jacobian, but we&rsquo;ll pretend we didn&rsquo;t hear that).</p>
+<p>⚠️ <strong>Note:</strong> So far we&rsquo;ve been treating the input $x$ as a single variable but most of the time $x$ will have more than one dimension. Computing the gradients in the multi-variate case isn&rsquo;t any more difficult than what we&rsquo;ve done (it involves something called the Jacobian, but we&rsquo;ll pretend we didn&rsquo;t hear that).</p>
 <h2 id="binary-cross-entropy">Binary Cross Entropy<a class="anchor" href="#binary-cross-entropy">#</a></h2>
 <p>Binary cross entropy penalizes predictions by the logarithm of their confidence. Given labels $y$ which are either zero or one and probabilities $\hat{y}$ for the positive class, binary cross entropy is computed as</p>
 <p>\[
@@ -167,7 +160,7 @@ x_3 &amp;= \mathrm{BCE}(x_2)
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial \hat{y}} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})}
 \]</p>
-<p>To avoid division-by-zero errors, we&rsquo;ll clip the probabilities so that they&rsquo;re not too close to zero or one.</p>
+<p>To avoid division-by-zero errors, we&rsquo;ll clip the probabilities so they&rsquo;re not too close to zero or one.</p>
 <pre><code class="language-python">class BinaryCrossEntropy:
     &quot;&quot;&quot;Container for the forward and backward pass of BCE.&quot;&quot;&quot;
 
@@ -184,27 +177,25 @@ x_3 &amp;= \mathrm{BCE}(x_2)
         return (self.y_hat - self.y) / (self.y_hat * (1 - self.y_hat))
 </code></pre>
 <h2 id="activations">Activations<a class="anchor" href="#activations">#</a></h2>
-<p>The easiest components of networks to handle are the activation functions. Our activation is sigmoid, which you&rsquo;ll often see defined as one of</p>
+<p>The easiest component of networks are the activation functions. Our activation is sigmoid, which you&rsquo;ll often see defined as one of</p>
 <p>\[
 \sigma(x) = \frac{1}{1 + \mathrm{exp}(-x)} \quad \text{or} \quad \frac{\mathrm{exp}(x)}{1 + \mathrm{exp}(x)}
 \]</p>
-<p>It turns out we need both versions to implement a numerically stable sigmoid. Why? Notice how when $x$ is very negative, $\mathrm{exp}(-x)$ is very large, and when $x$ is very positive, $\mathrm{exp}(x)$ is very large&mdash;in both cases, too large to store in memory. The easy fix is to use the former when $x &gt; 0$ and the latter when $x &lt; 0$.</p>
+<p>Turns out we need both versions to implement a numerically stable sigmoid. Why? Notice how when $x$ is very negative, $\mathrm{exp}(-x)$ is very large, and when $x$ is very positive, $\mathrm{exp}(x)$ is very large&mdash;in both cases, too large to store in memory. The easy fix is to use the former when $x &gt; 0$ and the latter when $x &lt; 0$.</p>
 <p>After simplifying, you&rsquo;ll find the derivative of sigmoid is</p>
 <p>\[
 \sigma'(x) = \sigma(x)(1 - \sigma(x))
 \]</p>
-<p>Notice something interesting? Since we denoted $\hat{y}$ as the output of sigmoid, this is exactly the denominator of the BCE gradient we just computed, meaning the two terms will cancel when multiplied, which is what the chain rule tells us will happen when we compute the gradient with respect to the outputs $x_1$ of our network&rsquo;s last (and only) linear layer.</p>
+<p>This is exactly the denominator of the BCE gradient we just computed, meaning the two terms will cancel when multiplied, which is what the chain rule tells us will happen when we compute the gradient with respect to the outputs $x_1$ of our network&rsquo;s last (and only) linear layer.</p>
 <p>\[
-\frac{\partial \mathrm{BCE}}{\partial x_1} =\frac{\partial \mathrm{BCE}}{\partial \hat{y}} \times \frac{\partial \mathrm{Sigmoid}}{\partial x_1}(x_1) = \hat{y} - y
+\frac{\partial \mathrm{BCE}}{\partial x_1} = \frac{\partial \mathrm{BCE}}{\partial \hat{y}} \times \frac{\partial \mathrm{Sigmoid}}{\partial x_1}(x_1)
+= \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})} \times \hat{y}(1 - \hat{y})
+= \hat{y} - y
 \]</p>
 <p>Nice, right? This tells us that the gradient of the loss with respect to the network&rsquo;s final linear outputs is just the difference between the probabilities $\hat{y}$ and the labels $y$. The further apart they are (i.e. the worse our predictions are), the larger the gradient and the larger the update to the weights in the SGD step.</p>
-<p>This is terrific because it means the weights of our network will change gradually as we train and won&rsquo;t spike or drop suddenly, which would be the case if the gradients were a quadratic or higher-order function of the prediction error. It also demonstrates nicely how a network adjusts its weights based on the error of its predictions.</p>
+<p>This is terrific because it means the weights of our network will change gradually as we train and won&rsquo;t spike or drop suddenly, which would be the case if the gradients were a quadratic or higher-order function of the prediction error. It also nicely demonstrates how a network adjusts its weights based on the error of its predictions.</p>
+<p>In fact, the same is true of multi-class classification, where instead of sigmoid we use softmax (or log softmax) as the final activation and cross entropy (or negative log-likelihood) as the loss.</p>
 <p>⚠️  <strong>Remember:</strong> Thanks to the chain rule, the above gradient appears as a factor in the gradients for all of the weights of our network, meaning they all depend linearly on the prediction error, which helps promote smoother training.</p>
-<p>In fact, the same is true of multi-classification, where instead of sigmoid we use softmax (or log softmax) as the final activation and cross entropy as the loss. In this case, the gradient with respect to the last linear layer&rsquo;s outputs $x$ is</p>
-<p>\[
-\frac{\partial \mathrm{CE}}{\partial x} = \frac{\partial \mathrm{CE}}{\partial \hat{y}} \times \frac{\partial \mathrm{Softmax}}{\partial x}(x) = \hat{y} - y
-\]</p>
-<p>We might cover the multi-class case in more depth in a follow-up post, although it&rsquo;s more or less the same as what we&rsquo;ve done so far.</p>
 <pre><code class="language-python">class Sigmoid:
     &quot;&quot;&quot;Container for the forward and backward pass of sigmoid.&quot;&quot;&quot;
 
@@ -225,7 +216,7 @@ x_3 &amp;= \mathrm{BCE}(x_2)
 <p>\[
 z = xw + b
 \]</p>
-<p>If $x$ is a mini-batch of shape $(bs, n_\mathrm{inp})$, then $w$ has shape $(n_\mathrm{inp}, n_\mathrm{out})$ and $b$ has shape $(n_\mathrm{out},)$, with addition being done via broadcasting. In our case $n_\mathrm{out}=1$, since we&rsquo;re just doing binary logistic regression, but we&rsquo;ll leave things as is to treat the general case. To make things easier, for the moment let&rsquo;s just imagine we have a batch size of one so that</p>
+<p>If $x$ is a mini-batch of shape $(bs, n_\mathrm{inp})$, then $w$ has shape $(n_\mathrm{inp}, n_\mathrm{out})$ and $b$ has shape $(n_\mathrm{out},)$, with addition being done via broadcasting. In our case $n_\mathrm{out}=1$, since we&rsquo;re just doing logistic regression, but we&rsquo;ll leave things as is to treat the general case. To make things easier, for the moment let&rsquo;s just imagine we have a batch size of one so that</p>
 <p>\[
 x = [x_1, \space \dots, \space x_{n_\mathrm{inp}}] \quad \text{and} \quad z = [z_1, \space \dots, \space z_{n_\mathrm{out}}]
 \]</p>
@@ -237,24 +228,24 @@ z_i = \sum_{k=1}^{n_\mathrm{inp}} \space x_k w_{ki} + b_i
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial b_i} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial b_i} = \frac{\partial \mathrm{BCE}}{\partial z_i}
 \]</p>
-<p>This is great because we&rsquo;ll already have the gradient with respect to the linear outputs $z$ stored in a variable $\mathrm{grad}$ from the previous back-prop step, so we get the gradient with respect to the bias for free. That just leaves the weights.</p>
+<p>This is great because we&rsquo;ll already have the gradient with respect to the linear outputs $z_i$ stored in a variable $\mathrm{grad}$ from the previous back-prop step, so we get the gradient with respect to the bias for free. That just leaves the weights.</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial w_{ki}} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}
 {\partial w_{ki}} = \frac{\partial \mathrm{BCE}}{\partial z_i} \times x_k
 \]</p>
-<p>Taking a closer look at these gradients, we see exactly why neural nets are so sensitive to the scale of their inputs. Because the gradients with respect to the weights $w$ are multiplied by the input features $x_k$, having features of different magnitudes will result in some gradients being larger than others. These larger gradients will dominate the learning process and prevent the network from learning from all features equally. This is why it&rsquo;s important to always normalize your data before training.</p>
+<p>Taking a closer look at these gradients, we see exactly why neural nets are so sensitive to the scale of their inputs. Because the gradients with respect to the weights $w$ are multiplied by the input features $x_k$, having features of different magnitudes will result in some gradients being larger than others. These larger gradients will dominate the learning process and prevent the network from learning from all features equally. This is why it&rsquo;s important to normalize your data before training.</p>
 <p>The last thing we have to do is to figure out how to write the above equations as a matrix product. Whenever I have to do something like this, I just focus on getting the shapes right.</p>
 <p>\begin{aligned}
 &amp;\bullet \space x \text{ has shape } (bs, n_\mathrm{inp}) \cr
 &amp;\bullet \space \text{grad has shape } (bs, n_\mathrm{out}) \cr
 &amp;\bullet \space \mathrm{grad_w} \text{ has shape } (n_\mathrm{inp}, n_\mathrm{out})
 \end{aligned}</p>
-<p>The only way we can multiply $x$ and $\mathrm{grad}$ and get something of shape $(n_\mathrm{inp}, n_\mathrm{out})$ is to re-shape $x$ to have shape $(bs, n_\mathrm{inp}, 1)$ and $\mathrm{grad}$ to have shape $(bs, 1, n_\mathrm{out})$ so that ordinary matrix multiplication over the last two dimensions gives the shape $(bs, n_\mathrm{inp}, n_\mathrm{out})$. Then we&rsquo;ll average the gradients over the batch dimension to get a single update to the weights.</p>
+<p>The only way we can multiply $x$ and $\mathrm{grad}$ and get something of shape $(n_\mathrm{inp}, n_\mathrm{out})$ is to reshape $x$ to have shape $(bs, n_\mathrm{inp}, 1)$ and $\mathrm{grad}$ to have shape $(bs, 1, n_\mathrm{out})$ so that ordinary matrix multiplication over the last two dimensions gives the shape $(bs, n_\mathrm{inp}, n_\mathrm{out})$. Then we&rsquo;ll average the gradients over the batch dimension to get a single update to the weights.</p>
 <p>As we mentioned earlier, were there another linear layer we&rsquo;d also need to compute the gradient with respect to the inputs $x$ so we could keep back-propagating the gradients. This isn&rsquo;t any more difficult than what we&rsquo;ve done so far and doing so will allow us to build a network with any number of layers, so let&rsquo;s go ahead and do it. Since $x_k$ appears in each of the activations $z_i$, the gradient will respect to $x_k$ will include all of the intermediate gradients with respect to the $z_i$.</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial x_k} = \sum_{i=1}^{n_\mathrm{inp}} \frac{\partial \mathrm{BCE}}{\partial z_i} \times \frac{\partial z_i}{\partial x_k} = \sum_{i=1}^{n_\mathrm{inp}} \frac{\partial \mathrm{BCE}}{\partial z_i} w_{ki}
 \]</p>
-<p>We can re-write this as a matrix product using the transpose of the weight matrix.</p>
+<p>We can rewrite this as a matrix product using the transpose of the weight matrix.</p>
 <p>\[
 \frac{\partial \mathrm{BCE}}{\partial x_k} = \mathrm{grad} \times w^t
 \]</p>

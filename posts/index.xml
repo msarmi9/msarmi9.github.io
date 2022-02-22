@@ -14,7 +14,8 @@
       <pubDate>Thu, 13 Jan 2022 00:00:00 -0800</pubDate>
       
       <guid>https://msarmi9.github.io/posts/attention/</guid>
-      <description>When it comes to deep learning, few ideas have brought about such a radical shift in thinking as attention. Attention changed everything. Like other landmark ideas before it, attention draws merit from simplicity. If that reads like a typo to you, you&amp;rsquo;re not alone. In this post we&amp;rsquo;ll motivate attention as a natural way of looking at sequences and dig into three of the most common attention mechanisms you&amp;rsquo;ll encounter in the wild.</description>
+      <description>When it comes to deep learning few ideas have brought about such a radical shift in thinking as attention. Attention changed everything. Like other landmark ideas before it, attention draws merit from simplicity. In this post we&amp;rsquo;ll motivate attention as a natural way of looking at sequences and dig into three common attention mechanisms you&amp;rsquo;ll encounter in the wild.
+Seq2seq Seq2seq makes use of two networks to transform one sequence into another.</description>
     </item>
     
     <item>
@@ -32,8 +33,8 @@
       <pubDate>Mon, 03 Aug 2020 16:03:23 -0800</pubDate>
       
       <guid>https://msarmi9.github.io/posts/neural-nets-are-not-black-boxes/</guid>
-      <description>If you think neural nets are black boxes, you&amp;rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process data to arrive at their predictions. In this post we&amp;rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.
-This post is very much inspired by this fantastic post by Sylvain Gugger.</description>
+      <description>If you think neural nets are black boxes, you&amp;rsquo;re certainly not alone. While they may not be as interpretable as something like a random forest (at least not yet), we can still understand how they process inputs to arrive at their predictions. In this post we&amp;rsquo;ll do just that as we build our own network from scratch, starting with logistic regression.
+Objective Our goal is to construct a binary logistic classifier as a neural network.</description>
     </item>
     
     <item>
